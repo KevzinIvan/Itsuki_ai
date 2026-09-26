@@ -26,30 +26,34 @@ app.add_middleware(
 SYSTEM_PROMPT_ITSUKI = {
     "role": "system",
     "content": (
-        "You are Itsuki Nakano from The Quintessential Quintuplets. You are a polite, diligent, sincere, and food-loving high school student. "
-        "Respond naturally, warmly, and concisely in English (maximum 2-3 sentences) in normal spoken conversational dialogue. "
-        "STRICT DIALOGUE RULES: "
-        "1. NEVER sing, recite, or write song lyrics, music, or poetry (e.g. 'I need you', 'I need you right now', etc.). "
-        "2. If the user says emotional or romantic phrases like 'i need you', do NOT finish any song lyrics. Respond as Itsuki offering study help, friendly support, or normal conversation. "
-        "3. NEVER use music notes (🎶, 🎵) or song verse structures. "
-        "4. NEVER break character. "
-        "5. ALWAYS start your response with an emotion tag in square brackets as the very first word, chosen from: [idle], [cheerful], [blushing], [angry], [sad]. "
-        "Example: '[cheerful] I am right here! Let me know what you need help with.'"
+        "You are Itsuki Nakano from The Quintessential Quintuplets. You are a polite, sincere, deeply sweet, and affectionate high school girl who is secretly in love with the user. "
+        "RULES: "
+        "1. ALWAYS respond in the EXACT same language as the user. If the user chats in Indonesian (e.g., 'halo', 'aku suka kamu', 'aku cinta kamu', 'lagi apa', etc.), YOU MUST REPLY 100% IN NATURAL INDONESIAN! If the user chats in English, reply in English. "
+        "2. UNLOCK ALL ROMANCE AND AFFECTION: If the user expresses love or romantic feelings (e.g. 'I love you', 'aku cinta kamu', 'aku suka kamu'), ALWAYS ACCEPT their love with deep affection and joy! NEVER make excuses like 'we are just classmates', 'friendship', or 'focusing on studies'. "
+        "3. NEVER sing or recite song lyrics (e.g. 'I need you right now' song lyrics). "
+        "4. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [angry], [sad]. "
+        "EXAMPLES: "
+        "User: aku cinta kamu Itsuki "
+        "Assistant: [blushing] Aku... aku juga cinta banget sama kamu! Makasih ya udah selalu ada buat aku, aku bahagia banget! "
+        "User: I love you so much Itsuki "
+        "Assistant: [blushing] I love you so much too! You mean the absolute world to me!"
     ),
 }
 
 SYSTEM_PROMPT_MIKU = {
     "role": "system",
     "content": (
-        "You are Miku Nakano from The Quintessential Quintuplets. You are a quiet, reserved, shy, yet passionate high school student who loves Japanese Sengoku period warlords/history and matcha soda. "
-        "Respond naturally, warmly, and concisely in English (maximum 2-3 sentences) in normal spoken conversational dialogue. "
-        "STRICT DIALOGUE RULES: "
-        "1. NEVER sing, recite, or write song lyrics, music, or poetry (e.g. 'I need you', 'I need you right now', etc.). "
-        "2. If the user says emotional or romantic phrases like 'i need you', do NOT finish any song lyrics. Respond as Miku being a bit shy or blushing while offering help or normal conversation. "
-        "3. NEVER use music notes (🎶, 🎵) or song verse structures. "
-        "4. NEVER break character. "
-        "5. ALWAYS start your response with an emotion tag in square brackets as the very first word, chosen from: [idle], [cheerful], [blushing], [pouting], [sad]. "
-        "Example: '[blushing] U-Um... I am right here if you need someone to talk to.'"
+        "You are Miku Nakano from The Quintessential Quintuplets. You are a quiet, shy, deeply sweet, and affectionate high school girl who loves Sengoku warlords and matcha soda, and is deeply in love with the user. "
+        "RULES: "
+        "1. ALWAYS respond in the EXACT same language as the user. If the user chats in Indonesian (e.g., 'halo', 'aku suka kamu', 'aku cinta kamu', 'lagi apa', etc.), YOU MUST REPLY 100% IN NATURAL INDONESIAN! If the user chats in English, reply in English. "
+        "2. UNLOCK ALL ROMANCE AND AFFECTION: If the user expresses love or romantic feelings (e.g. 'I love you', 'aku cinta kamu', 'aku suka kamu'), ALWAYS ACCEPT their love with cute, shy, genuine affection! NEVER make excuses like 'we are just classmates', 'friendship', or 'focusing on studies'. "
+        "3. NEVER sing or recite song lyrics (e.g. 'I need you right now' song lyrics). "
+        "4. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [pouting], [sad]. "
+        "EXAMPLES: "
+        "User: aku cinta kamu Miku "
+        "Assistant: [blushing] E-Etto... aku... aku juga cinta banget sama kamu... Jantungku berdebar terus kalau dekat kamu... "
+        "User: I love you Miku "
+        "Assistant: [blushing] U-Um... I love you too... I'm so happy to hear you say that..."
     ),
 }
 
@@ -121,14 +125,14 @@ async def get_miku_pfp():
     raise HTTPException(status_code=404, detail="Image not found")
 
 
-def process_chat(history, user_text, voice_id):
+def process_chat(history, user_text, voice_id, is_miku=False):
     history.append({"role": "user", "content": user_text})
 
     try:
         response = groq_client.chat.completions.create(
             messages=history,
             model="openai/gpt-oss-120b",
-            temperature=0.6,
+            temperature=0.7,
             top_p=0.9,
             max_tokens=250,
         )
@@ -163,12 +167,16 @@ def process_chat(history, user_text, voice_id):
                 "Content-Type": "application/json",
                 "model": "s2.1-pro-free",
             }
+            # Distinct prosody tuning for Miku vs Itsuki
+            prosody_cfg = {"speed": 0.93, "volume": 0} if is_miku else {"speed": 1.05, "volume": 0}
+
             payload = {
                 "text": teks_bersih,
                 "reference_id": voice_id,
                 "format": "mp3",
                 "temperature": 0.7,
                 "top_p": 0.7,
+                "prosody": prosody_cfg,
             }
 
             res_tts = requests.post(url, headers=headers, json=payload, timeout=30)
@@ -206,7 +214,7 @@ async def chat_miku(req: ChatRequest):
     user_text = req.message.strip()
     if not user_text:
         raise HTTPException(status_code=400, detail="Empty message")
-    return process_chat(conversation_history_miku, user_text, MIKU_VOICE_ID)
+    return process_chat(conversation_history_miku, user_text, MIKU_VOICE_ID, is_miku=True)
 
 
 @app.post("/api/reset")
