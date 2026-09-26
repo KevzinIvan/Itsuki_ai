@@ -1,9 +1,16 @@
 import os
 import sys
 import time
-import pygame
 import requests
 from groq import Groq
+
+try:
+    import pygame
+except ImportError:
+    pygame = None
+
+from app import app
+
 
 # 1. API Keys Configuration
 GROQ_API_KEY = "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"
