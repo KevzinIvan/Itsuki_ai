@@ -77,28 +77,29 @@
         border: none;
       }
       .header {
-        padding: 8px 6px;
-        gap: 4px;
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        justify-content: space-between !important;
+        padding: 8px 10px;
+        gap: 6px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
       }
       .character-info {
-        gap: 5px;
+        gap: 6px;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
         display: flex;
         align-items: center;
-        flex-shrink: 0;
       }
       .back-nav-btn {
-        padding: 3px 5px;
-        font-size: 0.8rem;
+        padding: 4px 6px;
+        font-size: 0.85rem;
         flex-shrink: 0;
       }
       .avatar-wrapper {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
       }
@@ -109,39 +110,46 @@
         aspect-ratio: 1 / 1;
         flex-shrink: 0;
       }
+      .character-details {
+        min-width: 0;
+        overflow: hidden;
+      }
       .character-details h2 {
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         margin: 0;
-        line-height: 1.1;
+        line-height: 1.2;
       }
       .creator-badge {
         display: none;
       }
       .subtitle {
         display: block;
-        font-size: 0.58rem;
+        font-size: 0.6rem;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         margin-top: 1px;
-        line-height: 1.1;
+        line-height: 1.2;
       }
       .header-actions {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        gap: 3px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
         flex-shrink: 0;
-        margin-left: auto;
       }
       .icon-btn {
-        padding: 3px 5px;
-        font-size: 0.65rem;
+        padding: 4px 6px;
+        font-size: 0.7rem;
         white-space: nowrap;
         flex-shrink: 0;
       }
       .emotion-badge {
-        padding: 3px 5px;
-        font-size: 0.65rem;
+        padding: 4px 6px;
+        font-size: 0.7rem;
         white-space: nowrap;
         flex-shrink: 0;
       }
@@ -154,17 +162,6 @@
       .footer {
         padding: 8px 10px;
         padding-bottom: max(8px, env(safe-area-inset-bottom));
-      }
-    }
-      .chat-messages {
-        padding: 14px 12px;
-      }
-      .message-row {
-        max-width: 90%;
-      }
-      .footer {
-        padding: 10px 12px;
-        padding-bottom: max(10px, env(safe-area-inset-bottom));
       }
     }
 
