@@ -66,7 +66,7 @@
       overflow: hidden;
     }
 
-    /* Mobile Configuration (HP) */
+    /* Mobile Configuration (HP) - Scaled to fit 100% full content */
     @media (max-width: 640px) {
       body {
         padding: 0;
@@ -78,27 +78,30 @@
         border: none;
       }
       .header {
-        padding: 8px 10px;
-        gap: 6px;
+        padding: 6px 8px;
+        gap: 4px;
         box-sizing: border-box;
         width: 100%;
         max-width: 100%;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .character-info {
-        gap: 6px;
+        gap: 4px;
         flex-shrink: 0;
         display: flex;
         align-items: center;
       }
       .back-nav-btn {
-        padding: 4px 6px;
-        font-size: 0.85rem;
+        padding: 2px 5px;
+        font-size: 0.75rem;
         flex-shrink: 0;
       }
       .avatar-wrapper {
-        width: 34px;
-        height: 34px;
+        width: 28px;
+        height: 28px;
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
       }
@@ -115,7 +118,7 @@
         flex-direction: column;
       }
       .character-details h2 {
-        font-size: 0.85rem;
+        font-size: clamp(0.7rem, 3.2vw, 0.8rem);
         white-space: nowrap;
         overflow: visible;
         text-overflow: clip;
@@ -128,11 +131,11 @@
       }
       .subtitle {
         display: block;
-        font-size: 0.6rem;
+        font-size: clamp(0.5rem, 2.2vw, 0.58rem);
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100px;
+        overflow: visible;
+        text-overflow: clip;
+        max-width: none;
         margin-top: 1px;
         line-height: 1.1;
       }
@@ -140,19 +143,19 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
         flex-shrink: 0;
         margin-left: auto;
       }
       .icon-btn {
-        padding: 4px 6px;
-        font-size: 0.7rem;
+        padding: 2px 5px;
+        font-size: 0.62rem;
         white-space: nowrap;
         flex-shrink: 0;
       }
       .emotion-badge {
-        padding: 4px 6px;
-        font-size: 0.7rem;
+        padding: 2px 5px;
+        font-size: 0.62rem;
         white-space: nowrap;
         flex-shrink: 0;
       }
