@@ -77,23 +77,21 @@
         border: none;
       }
       .header {
-        padding: 10px 10px;
-        gap: 6px;
+        padding: 8px 8px;
+        gap: 4px;
       }
       .character-info {
         gap: 6px;
         min-width: 0;
-        flex: 1;
-        overflow: hidden;
+        flex-shrink: 0;
       }
-      .character-details {
-        min-width: 0;
-        flex: 1;
-        overflow: hidden;
+      .back-nav-btn {
+        padding: 4px 6px;
+        font-size: 0.85rem;
       }
       .avatar-wrapper {
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
       }
@@ -105,29 +103,42 @@
         flex-shrink: 0;
       }
       .character-details h2 {
-        font-size: 0.9rem;
+        font-size: 0.82rem;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
       .creator-badge {
         display: none;
       }
       .subtitle {
-        display: none;
+        display: block;
+        font-size: 0.62rem;
+        white-space: nowrap;
+        margin-top: 1px;
       }
       .header-actions {
-        gap: 4px;
+        gap: 3px;
         flex-shrink: 0;
+        margin-left: auto;
       }
       .icon-btn {
-        padding: 5px 7px;
-        font-size: 0.7rem;
+        padding: 4px 6px;
+        font-size: 0.68rem;
       }
       .emotion-badge {
-        padding: 4px 7px;
-        font-size: 0.7rem;
+        padding: 4px 6px;
+        font-size: 0.68rem;
       }
+      .chat-messages {
+        padding: 12px 10px;
+      }
+      .message-row {
+        max-width: 90%;
+      }
+      .footer {
+        padding: 8px 10px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+      }
+    }
       .chat-messages {
         padding: 14px 12px;
       }
