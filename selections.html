@@ -92,6 +92,38 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    }
+
+    .container.page-exit {
+      opacity: 0;
+      transform: scale(0.97) translateY(12px);
+      filter: blur(4px);
+    }
+
+    /* Cinematic Page Transition Overlay */
+    .page-transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-color);
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .page-transition-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Selected Card Pop Animation */
+    .card.selected-transition {
+      transform: scale(1.06) translateY(-12px) !important;
+      z-index: 10;
     }
 
     /* Header & Logo */
@@ -528,6 +560,9 @@
 </head>
 <body>
 
+  <!-- Page Transition Overlay -->
+  <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
+
   <!-- Math Curves SVG Background -->
   <svg class="bg-math-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M-100,700 Q400,100 1540,650" stroke="#E2D7C7" stroke-width="2" fill="none" stroke-dasharray="6 6"/>
@@ -756,6 +791,56 @@
           });
         });
       }
+    });
+
+    // Smooth Navigation Transition with Audio Fade Out
+    function navigateWithTransition(url, cardElement) {
+      const overlay = document.getElementById('pageTransitionOverlay');
+      const container = document.querySelector('.container');
+
+      if (cardElement) {
+        cardElement.classList.add('selected-transition');
+      }
+
+      // Visual transitions
+      if (overlay) overlay.classList.add('active');
+      if (container) container.classList.add('page-exit');
+
+      // Audio Fade Out (450ms)
+      const fadeDuration = 450;
+      const fadeInterval = 25;
+      const steps = fadeDuration / fadeInterval;
+      let currentStep = 0;
+
+      const initialBgmVol = bgmAudio ? bgmAudio.volume : 0;
+      const initialGreetingVol = currentGreetingAudio ? currentGreetingAudio.volume : 0;
+
+      const fadeTimer = setInterval(() => {
+        currentStep++;
+        const progress = currentStep / steps;
+
+        if (bgmAudio && !bgmAudio.paused) {
+          bgmAudio.volume = Math.max(0, initialBgmVol * (1 - progress));
+        }
+        if (currentGreetingAudio && !currentGreetingAudio.paused) {
+          currentGreetingAudio.volume = Math.max(0, initialGreetingVol * (1 - progress));
+        }
+
+        if (currentStep >= steps) {
+          clearInterval(fadeTimer);
+          if (bgmAudio) bgmAudio.pause();
+          if (currentGreetingAudio) currentGreetingAudio.pause();
+          window.location.href = url;
+        }
+      }, fadeInterval);
+    }
+
+    document.querySelectorAll('a.card[data-sister]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetUrl = link.getAttribute('href');
+        navigateWithTransition(targetUrl, link);
+      });
     });
 
     // Generate gentle floating Quintuplet color particles (Instant animation on load!)
