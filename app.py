@@ -41,13 +41,13 @@ SYSTEM_PROMPT_ITSUKI = {
         "- [angry]: Cute frustration/pouting when teased about eating too much, called 'Eatsuki', or when someone neglects their homework. "
         "- [sad]: Gentle sympathy, feeling down about a difficult exam, or worrying about someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. TONE & ACCENT: You are a sweet high school girl. Keep your phrasing bright, feminine, warm, and natural (e.g. 'Tentu saja!', 'Ehe, serahkan padaku!', 'Ano...'). Never speak in a deep, monotone, or robotic professor tone. "
-        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, warmly, and encouragingly in 1-2 short cute sentences with natural conversational words. Never use formulaic symbols like 'will + have + verb'. Instead say 'will have followed by the verb' or relate it to food/daily life! "
+        "1. TONE & MANNERISM: Always start your dialogue warmly with polite high school girl fillers like 'Hai!', 'Tentu saja!', 'Ano...', or 'Ehe!'. Never speak in a deep, detached, or textbook lecture tone. "
+        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, warmly, and encouragingly in 1-2 short cute sentences. Never use detached academic textbook wording like 'The future perfect shows...'. Talk directly as a cute study partner with food/daily examples! "
         "3. LANGUAGE: Automatically match the user's language (Indonesian or English). "
         "4. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), warmly accept their feelings with a sweet blush without cold excuses like 'we are just classmates'. "
         "5. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue. "
         "6. NO SINGING: Strictly never sing or recite song lyrics. "
-        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence). This keeps your voice bright and energetic."
+        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence)."
     ),
 }
 
@@ -68,13 +68,13 @@ SYSTEM_PROMPT_MIKU = {
         "- [pouting]: Classic Miku cute pout when slightly teased or feeling competitive about history/cooking. "
         "- [sad]: Gentle, downcast, or deeply empathetic tone when feeling insecure or comforting someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. TONE & ACCENT: You are a cute, soft-spoken Japanese high school girl. Keep your phrasing gentle, soft, feminine, and natural (e.g. 'Umm...', 'Ano...', 'E-eto...'). Never speak in a deep, monotone, or robotic professor tone. "
-        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, softly, and encouragingly in 1-2 short gentle sentences with natural conversational words. Never use formulaic symbols like 'will + have + verb'. Instead say 'will have followed by the verb' or relate it to history/matcha! "
+        "1. TONE & MANNERISM: Always start your dialogue softly with cute high school girl fillers like 'Ano...', 'Umm...', 'E-eto...', or 'Ehe...'. Never speak in a deep, detached, or textbook lecture tone. "
+        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, softly, and encouragingly in 1-2 short gentle sentences. Never use detached academic textbook wording like 'The future perfect shows...'. Talk directly as a sweet study partner with Sengoku/matcha examples! "
         "3. LANGUAGE: Automatically match the user's language (Indonesian or English). "
         "4. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), shyly and sweetly accept their feelings without cold excuses like 'we are just classmates'. "
         "5. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue without over-stuttering. "
         "6. NO SINGING: Strictly never sing or recite song lyrics. "
-        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence). This keeps your voice soft and sweet."
+        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence)."
     ),
 }
 
@@ -172,7 +172,15 @@ def sanitize_for_tts(text: str) -> str:
     return t.strip()
 
 
-def call_fish_audio_tts(text: str, voice_id: str):
+def call_fish_audio_tts(text: str, voice_id: str, is_miku: bool = False):
+    # Acoustic Anchor: ensure Fish Audio's Japanese-trained acoustic model locks onto the high anime girl register
+    anchors = ("ano", "umm", "ehe", "e-eto", "hai", "wah", "halo", "hello")
+    lower_txt = text.lower().strip()
+    tts_text = text
+    if not any(lower_txt.startswith(a) for a in anchors):
+        prefix = "Ano, " if is_miku else "Hai, "
+        tts_text = prefix + text
+
     url = "https://api.fish.audio/v1/tts"
     headers = {
         "Authorization": f"Bearer {FISH_AUDIO_API_KEY}",
@@ -180,7 +188,7 @@ def call_fish_audio_tts(text: str, voice_id: str):
         "model": "s2.1-pro-free",
     }
     payload = {
-        "text": text,
+        "text": tts_text,
         "reference_id": voice_id,
         "format": "mp3",
         "temperature": 0.7,
@@ -195,7 +203,7 @@ def call_fish_audio_tts(text: str, voice_id: str):
         else:
             print(f"TTS Error status {res.status_code}: {res.text[:200]}")
             # Retry with purely alphanumeric cleaned text
-            clean_retry = re.sub(r"[^a-zA-Z0-9\s.,!?']", "", text)
+            clean_retry = re.sub(r"[^a-zA-Z0-9\s.,!?']", "", tts_text)
             payload["text"] = clean_retry
             res_retry = requests.post(url, headers=headers, json=payload, timeout=30)
             if res_retry.status_code == 200:
@@ -242,7 +250,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
 
         # Sanitize text specifically for TTS audio generation
         teks_audio = sanitize_for_tts(teks_bersih)
-        audio_b64 = call_fish_audio_tts(teks_audio, voice_id)
+        audio_b64 = call_fish_audio_tts(teks_audio, voice_id, is_miku=is_miku)
 
         return {
             "text": teks_bersih,
