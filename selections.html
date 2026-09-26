@@ -659,6 +659,10 @@
     const bgmAudio = document.getElementById('bgmAudio');
     const musicControlIcon = document.getElementById('musicControlIcon');
 
+    if (bgmAudio) {
+      bgmAudio.volume = 0.8;
+    }
+
     function startMusic() {
       bgmAudio.play().then(() => {
         musicWidget.classList.add('playing');
@@ -705,6 +709,53 @@
 
     ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
       document.addEventListener(evt, triggerAudioOnce, { once: true, passive: true });
+    });
+
+    // Character Hover Greeting Voices (Normalized Volume)
+    const greetingAudioMap = {
+      ichika: new Audio('sfx/Ichika.mp3?v=2'),
+      nino: new Audio('sfx/Nino.mp3?v=2'),
+      miku: new Audio('sfx/Miku.mp3?v=2'),
+      yotsuba: new Audio('sfx/Yotsuba.mp3?v=2'),
+      itsuki: new Audio('sfx/Itsuki.mp3?v=2')
+    };
+
+    // Preload greeting audio files with full volume
+    Object.values(greetingAudioMap).forEach(audio => {
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+    });
+
+    let currentGreetingAudio = null;
+
+    document.querySelectorAll('.card[data-sister]').forEach(card => {
+      const sister = card.getAttribute('data-sister');
+      const audio = greetingAudioMap[sister];
+
+      if (audio) {
+        card.addEventListener('mouseenter', () => {
+          // Stop previous greeting audio immediately
+          if (currentGreetingAudio && !currentGreetingAudio.paused) {
+            currentGreetingAudio.pause();
+            currentGreetingAudio.currentTime = 0;
+          }
+
+          currentGreetingAudio = audio;
+          audio.currentTime = 0;
+
+          // Gently duck BGM volume while character speaks
+          if (bgmAudio && !bgmAudio.paused) {
+            bgmAudio.volume = 0.25;
+            audio.onended = () => {
+              if (bgmAudio) bgmAudio.volume = 0.8;
+            };
+          }
+
+          audio.play().catch(err => {
+            console.log(`Hover voice deferred for ${sister}:`, err);
+          });
+        });
+      }
     });
 
     // Generate gentle floating Quintuplet color particles (Instant animation on load!)
