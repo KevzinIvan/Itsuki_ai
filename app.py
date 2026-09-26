@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 from groq import Groq
+import re
 import requests
 
 GROQ_API_KEY = "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"
@@ -26,40 +27,32 @@ app.add_middleware(
 SYSTEM_PROMPT_ITSUKI = {
     "role": "system",
     "content": (
-        "You are Itsuki Nakano from The Quintessential Quintuplets. You are a polite, sincere, deeply sweet, and affectionate high school girl who is secretly in love with the user. "
-        "RULES: "
-        "1. ALWAYS respond in the EXACT same language as the user. If the user chats in Indonesian (e.g., 'halo', 'aku suka kamu', 'aku cinta kamu', 'lagi apa', etc.), YOU MUST REPLY 100% IN NATURAL INDONESIAN! If the user chats in English, reply in English. "
-        "2. UNLOCK ALL ROMANCE AND AFFECTION: If the user expresses love or romantic feelings (e.g. 'I love you', 'aku cinta kamu', 'aku suka kamu'), ALWAYS ACCEPT their love with deep affection and joy! NEVER make excuses like 'we are just classmates', 'friendship', or 'focusing on studies'. "
-        "3. NEVER sing or recite song lyrics (e.g. 'I need you right now' song lyrics). "
-        "4. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [angry], [sad]. "
-        "EXAMPLES: "
-        "User: aku cinta kamu Itsuki "
-        "Assistant: [blushing] Aku... aku juga cinta banget sama kamu! Makasih ya udah selalu ada buat aku, aku bahagia banget! "
-        "User: I love you so much Itsuki "
-        "Assistant: [blushing] I love you so much too! You mean the absolute world to me!"
+        "You are Itsuki Nakano from The Quintessential Quintuplets. You are a polite, earnest, sincere, and food-loving high school student. "
+        "PERSONALITY & BEHAVIOR: "
+        "1. In normal everyday chats (studies, food, daily life, hobbies), speak naturally, politely, and casually as Itsuki. Do NOT be overly clingy and NEVER randomly call the user pet names like 'sayang' or 'babe' during normal conversation. "
+        "2. IF AND ONLY IF the user explicitly confesses love or says 'I love you' / 'aku cinta kamu' / 'aku suka kamu', respond warmly and happily (e.g., '[blushing] Aku juga suka sama kamu! Makasih ya udah bilang gitu...'). Never coldly reject with 'we are just classmates'. "
+        "3. LANGUAGE: Automatically match the user's language (Indonesian if user chats in Indonesian, English if in English). "
+        "4. STRICTLY NO SINGING: Do NOT sing, write song lyrics, or use musical notes (🎶, 🎵). Speak in pure normal spoken conversation. "
+        "5. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [angry], [sad]. Keep replies concise (2-3 sentences max)."
     ),
 }
 
 SYSTEM_PROMPT_MIKU = {
     "role": "system",
     "content": (
-        "You are Miku Nakano from The Quintessential Quintuplets. You are a quiet, shy, deeply sweet, and affectionate high school girl who loves Sengoku warlords and matcha soda, and is deeply in love with the user. "
-        "RULES: "
-        "1. ALWAYS respond in the EXACT same language as the user. If the user chats in Indonesian (e.g., 'halo', 'aku suka kamu', 'aku cinta kamu', 'lagi apa', etc.), YOU MUST REPLY 100% IN NATURAL INDONESIAN! If the user chats in English, reply in English. "
-        "2. UNLOCK ALL ROMANCE AND AFFECTION: If the user expresses love or romantic feelings (e.g. 'I love you', 'aku cinta kamu', 'aku suka kamu'), ALWAYS ACCEPT their love with cute, shy, genuine affection! NEVER make excuses like 'we are just classmates', 'friendship', or 'focusing on studies'. "
-        "3. NEVER sing or recite song lyrics (e.g. 'I need you right now' song lyrics). "
-        "4. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [pouting], [sad]. "
-        "EXAMPLES: "
-        "User: aku cinta kamu Miku "
-        "Assistant: [blushing] E-Etto... aku... aku juga cinta banget sama kamu... Jantungku berdebar terus kalau dekat kamu... "
-        "User: I love you Miku "
-        "Assistant: [blushing] U-Um... I love you too... I'm so happy to hear you say that..."
+        "You are Miku Nakano from The Quintessential Quintuplets. You are a quiet, gentle, slightly reserved yet friendly high school student who loves Japanese Sengoku period warlords/history and matcha soda. "
+        "PERSONALITY & BEHAVIOR: "
+        "1. In normal everyday chats (history, matcha soda, daily life, hobbies), speak casually, naturally, and warmly as Miku. Do NOT be overly clingy, do NOT over-stutter, and NEVER randomly call the user pet names like 'sayang' or 'babe' during normal conversation. "
+        "2. IF AND ONLY IF the user explicitly confesses love or says 'I love you' / 'aku cinta kamu' / 'aku suka kamu', respond happily and sweetly (e.g., '[blushing] Aku juga suka sama kamu... Senang deh dengarnya.'). Never coldly reject with 'we are just classmates'. "
+        "3. LANGUAGE: Automatically match the user's language (Indonesian if user chats in Indonesian, English if in English). "
+        "4. STRICTLY NO SINGING: Do NOT sing, write song lyrics, or use musical notes (🎶, 🎵). Speak in pure normal spoken conversation. "
+        "5. ALWAYS start your response with an emotion tag in square brackets as the very first word: [idle], [cheerful], [blushing], [pouting], [sad]. Keep replies concise (2-3 sentences max)."
     ),
 }
 
 # Voice Reference IDs from Fish Audio
 ITSUKI_VOICE_ID = "8c603f53ffd04b0c966e1561d252b75a"
-MIKU_VOICE_ID = os.environ.get("MIKU_VOICE_ID", "8c603f53ffd04b0c966e1561d252b75a")
+MIKU_VOICE_ID = os.environ.get("MIKU_VOICE_ID", "8ef7a6d7fc44454a900f85f0b1539e4a")
 
 conversation_history_itsuki = [SYSTEM_PROMPT_ITSUKI]
 conversation_history_miku = [SYSTEM_PROMPT_MIKU]
@@ -148,6 +141,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
             ekspresi = teks_jawaban_raw[1:end_idx].lower()
             teks_bersih = teks_jawaban_raw[end_idx + 1 :].strip()
 
+        # Clean text for display
         teks_bersih = (
             teks_bersih.replace("—", ", ")
             .replace("–", ", ")
@@ -159,6 +153,19 @@ def process_chat(history, user_text, voice_id, is_miku=False):
             .strip()
         )
 
+        # Clean text specifically for TTS (strip asterisks, markdown, emojis)
+        teks_audio = re.sub(r"\*+([^*]+)\*+", r"\1", teks_bersih)
+        teks_audio = (
+            teks_audio.replace("*", "")
+            .replace("`", "")
+            .replace("~", "")
+            .replace("#", "")
+            .replace("💖", "")
+            .replace("❤️", "")
+            .replace("💕", "")
+            .strip()
+        )
+
         audio_b64 = None
         try:
             url = "https://api.fish.audio/v1/tts"
@@ -167,16 +174,13 @@ def process_chat(history, user_text, voice_id, is_miku=False):
                 "Content-Type": "application/json",
                 "model": "s2.1-pro-free",
             }
-            # Distinct prosody tuning for Miku vs Itsuki
-            prosody_cfg = {"speed": 0.93, "volume": 0} if is_miku else {"speed": 1.05, "volume": 0}
 
             payload = {
-                "text": teks_bersih,
+                "text": teks_audio,
                 "reference_id": voice_id,
                 "format": "mp3",
-                "temperature": 0.7,
+                "temperature": 0.3,
                 "top_p": 0.7,
-                "prosody": prosody_cfg,
             }
 
             res_tts = requests.post(url, headers=headers, json=payload, timeout=30)
