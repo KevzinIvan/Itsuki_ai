@@ -77,21 +77,28 @@
         border: none;
       }
       .header {
-        padding: 8px 8px;
+        padding: 8px 6px;
         gap: 4px;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
       }
       .character-info {
-        gap: 6px;
-        min-width: 0;
+        gap: 5px;
+        display: flex;
+        align-items: center;
         flex-shrink: 0;
       }
       .back-nav-btn {
-        padding: 4px 6px;
-        font-size: 0.85rem;
+        padding: 3px 5px;
+        font-size: 0.8rem;
+        flex-shrink: 0;
       }
       .avatar-wrapper {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
       }
@@ -103,30 +110,40 @@
         flex-shrink: 0;
       }
       .character-details h2 {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         white-space: nowrap;
+        margin: 0;
+        line-height: 1.1;
       }
       .creator-badge {
         display: none;
       }
       .subtitle {
         display: block;
-        font-size: 0.62rem;
+        font-size: 0.58rem;
         white-space: nowrap;
         margin-top: 1px;
+        line-height: 1.1;
       }
       .header-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
         gap: 3px;
         flex-shrink: 0;
         margin-left: auto;
       }
       .icon-btn {
-        padding: 4px 6px;
-        font-size: 0.68rem;
+        padding: 3px 5px;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .emotion-badge {
-        padding: 4px 6px;
-        font-size: 0.68rem;
+        padding: 3px 5px;
+        font-size: 0.65rem;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .chat-messages {
         padding: 12px 10px;
