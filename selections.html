@@ -434,9 +434,9 @@
       }, 4000);
     }
 
-    // Generate gentle floating Quintuplet color particles
+    // Generate gentle floating Quintuplet color particles (Instant animation on load!)
     const colors = ['#EAB308', '#EC4899', '#3B82F6', '#10B981', '#EF4444', '#F59E0B'];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 28; i++) {
       const p = document.createElement('div');
       p.className = 'particle';
       const size = Math.random() * 8 + 4;
@@ -444,8 +444,12 @@
       p.style.height = size + 'px';
       p.style.background = colors[Math.floor(Math.random() * colors.length)];
       p.style.left = Math.random() * 100 + 'vw';
-      p.style.animationDuration = (Math.random() * 8 + 7) + 's';
-      p.style.animationDelay = (Math.random() * 6) + 's';
+      
+      const duration = Math.random() * 8 + 7;
+      p.style.animationDuration = duration + 's';
+      // Negative delay starts animation mid-flight instantly!
+      p.style.animationDelay = (-Math.random() * duration) + 's';
+      
       document.body.appendChild(p);
     }
   </script>
