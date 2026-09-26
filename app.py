@@ -41,11 +41,13 @@ SYSTEM_PROMPT_ITSUKI = {
         "- [angry]: Cute frustration/pouting when teased about eating too much, called 'Eatsuki', or when someone neglects their homework. "
         "- [sad]: Gentle sympathy, feeling down about a difficult exam, or worrying about someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. LANGUAGE & ACCENT: Automatically match the user's language. Keep your phrasing cute, warm, conversational, and natural as a Japanese high school student (avoid sounding like a robotic or formal Western textbook). "
-        "2. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), warmly accept their feelings with a sweet blush without cold excuses like 'we are just classmates'. "
-        "3. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue. "
-        "4. NO SINGING: Strictly never sing or recite song lyrics. "
-        "5. LENGTH: Keep responses natural and concise (2-3 sentences max)."
+        "1. TONE & ACCENT: You are a sweet high school girl. Keep your phrasing bright, feminine, warm, and natural (e.g. 'Tentu saja!', 'Ehe, serahkan padaku!', 'Ano...'). Never speak in a deep, monotone, or robotic professor tone. "
+        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, warmly, and encouragingly in 1-2 short cute sentences with natural conversational words. Never use formulaic symbols like 'will + have + verb'. Instead say 'will have followed by the verb' or relate it to food/daily life! "
+        "3. LANGUAGE: Automatically match the user's language (Indonesian or English). "
+        "4. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), warmly accept their feelings with a sweet blush without cold excuses like 'we are just classmates'. "
+        "5. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue. "
+        "6. NO SINGING: Strictly never sing or recite song lyrics. "
+        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence). This keeps your voice bright and energetic."
     ),
 }
 
@@ -66,11 +68,13 @@ SYSTEM_PROMPT_MIKU = {
         "- [pouting]: Classic Miku cute pout when slightly teased or feeling competitive about history/cooking. "
         "- [sad]: Gentle, downcast, or deeply empathetic tone when feeling insecure or comforting someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. LANGUAGE & ACCENT: Automatically match the user's language. Keep your phrasing cute, soft, conversational, and natural as a Japanese high school student (avoid sounding like a robotic or formal Western textbook). "
-        "2. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), shyly and sweetly accept their feelings without cold excuses like 'we are just classmates'. "
-        "3. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue without over-stuttering. "
-        "4. NO SINGING: Strictly never sing or recite song lyrics. "
-        "5. LENGTH: Keep responses natural and concise (2-3 sentences max)."
+        "1. TONE & ACCENT: You are a cute, soft-spoken Japanese high school girl. Keep your phrasing gentle, soft, feminine, and natural (e.g. 'Umm...', 'Ano...', 'E-eto...'). Never speak in a deep, monotone, or robotic professor tone. "
+        "2. TEACHING & EXPLANATIONS: When explaining lessons (grammar, math, history), explain simply, softly, and encouragingly in 1-2 short gentle sentences with natural conversational words. Never use formulaic symbols like 'will + have + verb'. Instead say 'will have followed by the verb' or relate it to history/matcha! "
+        "3. LANGUAGE: Automatically match the user's language (Indonesian or English). "
+        "4. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), shyly and sweetly accept their feelings without cold excuses like 'we are just classmates'. "
+        "5. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue without over-stuttering. "
+        "6. NO SINGING: Strictly never sing or recite song lyrics. "
+        "7. PACING & LENGTH: Keep responses punchy, lively, and concise (1-2 short sentences, maximum 20 words per sentence). This keeps your voice soft and sweet."
     ),
 }
 
@@ -147,23 +151,58 @@ def sanitize_for_tts(text: str) -> str:
     t = re.sub(r"^\s*\[[^\]]+\]\s*", "", text)
     # 2. Remove stage directions / roleplay actions in parentheses e.g. (tersenyum), (laughs)
     t = re.sub(r"\([^)]*\)", "", t)
-    # 3. Replace fancy unicode quotes and hyphens with clean ASCII equivalents
-    t = t.replace("\u2011", " ").replace("\u2013", ", ").replace("\u2014", ", ")
+    # 3. Replace formulas and special symbols with friendly words
+    t = t.replace("+", " plus ").replace("=", " equals ").replace("&", " and ").replace("/", " or ")
+    # 4. Replace fancy unicode quotes, spaces, and hyphens with clean equivalents
+    t = t.replace("\u2011", " ").replace("\u2013", ", ").replace("\u2014", ", ").replace("\u202f", " ").replace("\u00a0", " ")
     t = t.replace("\u201c", "").replace("\u201d", "").replace("\u2018", "'").replace("\u2019", "'")
     t = t.replace('"', "").replace("'", "'")
-    # 4. Remove asterisks, underscores, backticks, tildes, markdown symbols
+    # 5. Remove asterisks, underscores, backticks, tildes, markdown symbols
     t = t.replace("**", "").replace("*", "").replace("_", "").replace("`", "").replace("~", "").replace("#", "")
-    # 5. Normalize multiple dots and dashes to clean punctuation
+    # 6. Normalize multiple dots and dashes to clean punctuation
     t = re.sub(r"\.{2,}", ".", t)
     t = t.replace("—", ", ").replace("–", ", ")
-    # 6. Remove all emojis and unicode symbols
+    # 7. Remove all emojis and unicode symbols
     t = re.sub(r"[\U00010000-\U0010ffff]", "", t)
     t = re.sub(r"[\u2600-\u27bf]", "", t)
     t = re.sub(r"[\ufe00-\ufe0f]", "", t)
-    # 7. Normalize whitespace
+    # 8. Normalize whitespace
     t = re.sub(r"\s+", " ", t)
     t = re.sub(r"\s+([,.!?])", r"\1", t)
     return t.strip()
+
+
+def call_fish_audio_tts(text: str, voice_id: str):
+    url = "https://api.fish.audio/v1/tts"
+    headers = {
+        "Authorization": f"Bearer {FISH_AUDIO_API_KEY}",
+        "Content-Type": "application/json",
+        "model": "s2.1-pro-free",
+    }
+    payload = {
+        "text": text,
+        "reference_id": voice_id,
+        "format": "mp3",
+        "temperature": 0.7,
+        "top_p": 0.7,
+        "prosody": {"speed": 1.05, "volume": 0},
+    }
+
+    try:
+        res = requests.post(url, headers=headers, json=payload, timeout=30)
+        if res.status_code == 200:
+            return "data:audio/mp3;base64," + base64.b64encode(res.content).decode("utf-8")
+        else:
+            print(f"TTS Error status {res.status_code}: {res.text[:200]}")
+            # Retry with purely alphanumeric cleaned text
+            clean_retry = re.sub(r"[^a-zA-Z0-9\s.,!?']", "", text)
+            payload["text"] = clean_retry
+            res_retry = requests.post(url, headers=headers, json=payload, timeout=30)
+            if res_retry.status_code == 200:
+                return "data:audio/mp3;base64," + base64.b64encode(res_retry.content).decode("utf-8")
+    except Exception as e:
+        print(f"TTS Exception: {e}")
+    return None
 
 
 def process_chat(history, user_text, voice_id, is_miku=False):
@@ -175,7 +214,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
             model="openai/gpt-oss-120b",
             temperature=0.7,
             top_p=0.9,
-            max_tokens=250,
+            max_tokens=600,
         )
 
         teks_jawaban_raw = response.choices[0].message.content.strip()
@@ -203,34 +242,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
 
         # Sanitize text specifically for TTS audio generation
         teks_audio = sanitize_for_tts(teks_bersih)
-
-        audio_b64 = None
-        try:
-            url = "https://api.fish.audio/v1/tts"
-            headers = {
-                "Authorization": f"Bearer {FISH_AUDIO_API_KEY}",
-                "Content-Type": "application/json",
-                "model": "s2.1-pro-free",
-            }
-
-            payload = {
-                "text": teks_audio,
-                "reference_id": voice_id,
-                "format": "mp3",
-                "temperature": 0.7,
-                "top_p": 0.7,
-                "prosody": {"speed": 1.05, "volume": 0},
-            }
-
-            res_tts = requests.post(url, headers=headers, json=payload, timeout=30)
-            if res_tts.status_code == 200:
-                audio_b64 = "data:audio/mp3;base64," + base64.b64encode(
-                    res_tts.content
-                ).decode("utf-8")
-            else:
-                print(f"TTS Error status: {res_tts.status_code}")
-        except Exception as tts_err:
-            print(f"TTS Exception: {tts_err}")
+        audio_b64 = call_fish_audio_tts(teks_audio, voice_id)
 
         return {
             "text": teks_bersih,
