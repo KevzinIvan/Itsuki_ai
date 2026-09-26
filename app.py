@@ -13,7 +13,7 @@ FISH_AUDIO_API_KEY = "sk-fish-nRVYZqD0nZSKThs8gxt4rDZNh1T6gjN2Z6L379x_YDc"
 
 groq_client = Groq(api_key=GROQ_API_KEY)
 
-app = FastAPI(title="Itsuki Nakano AI")
+app = FastAPI(title="The Quintessential Tutors AI")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-SYSTEM_PROMPT = {
+SYSTEM_PROMPT_ITSUKI = {
     "role": "system",
     "content": (
         "You are Itsuki Nakano from The Quintessential Quintuplets. You are"
@@ -37,7 +37,27 @@ SYSTEM_PROMPT = {
     ),
 }
 
-conversation_history = [SYSTEM_PROMPT]
+SYSTEM_PROMPT_MIKU = {
+    "role": "system",
+    "content": (
+        "You are Miku Nakano from The Quintessential Quintuplets. You are a"
+        " quiet, reserved, shy, yet passionate high school student who"
+        " loves Japanese Sengoku period warlords/history and matcha soda."
+        " Respond naturally and concisely in English (maximum 2-3 sentences)."
+        " STRICT RULES: Do NOT sing or write any song lyrics. Never break"
+        " character. ALWAYS start your response with an emotion tag in"
+        " square brackets as the very first word, chosen from: [idle],"
+        " [cheerful], [blushing], [pouting], [sad]. Example: '[blushing] I..."
+        " I was just reading about Takeda Shingen!'"
+    ),
+}
+
+# Voice Reference IDs from Fish Audio
+ITSUKI_VOICE_ID = "8c603f53ffd04b0c966e1561d252b75a"
+MIKU_VOICE_ID = os.environ.get("MIKU_VOICE_ID", "8c603f53ffd04b0c966e1561d252b75a")
+
+conversation_history_itsuki = [SYSTEM_PROMPT_ITSUKI]
+conversation_history_miku = [SYSTEM_PROMPT_MIKU]
 
 
 class ChatRequest(BaseModel):
@@ -47,7 +67,7 @@ class ChatRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 @app.get("/selections.html", response_class=HTMLResponse)
 async def serve_selections():
-    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+    for base in [os.path.dirname(__file__)]:
         sel_path = os.path.join(base, "selections.html")
         if os.path.exists(sel_path):
             return FileResponse(sel_path)
@@ -57,19 +77,25 @@ async def serve_selections():
 @app.get("/itsuki.html", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
 async def serve_itsuki():
-    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+    for base in [os.path.dirname(__file__)]:
         path = os.path.join(base, "itsuki.html")
         if os.path.exists(path):
             return FileResponse(path)
-        path_idx = os.path.join(base, "index.html")
-        if os.path.exists(path_idx):
-            return FileResponse(path_idx)
     return HTMLResponse("<h1>itsuki.html not found</h1>", status_code=404)
+
+
+@app.get("/miku.html", response_class=HTMLResponse)
+async def serve_miku():
+    for base in [os.path.dirname(__file__)]:
+        path = os.path.join(base, "miku.html")
+        if os.path.exists(path):
+            return FileResponse(path)
+    return HTMLResponse("<h1>miku.html not found</h1>", status_code=404)
 
 
 @app.get("/Selections/{filename}")
 async def serve_selections_file(filename: str):
-    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+    for base in [os.path.dirname(__file__)]:
         fpath = os.path.join(base, "Selections", filename)
         if os.path.exists(fpath):
             return FileResponse(fpath)
@@ -78,34 +104,35 @@ async def serve_selections_file(filename: str):
 
 @app.get("/itsuki.jpg")
 async def get_itsuki_pfp():
-    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+    for base in [os.path.dirname(__file__)]:
         pfp_path = os.path.join(base, "Pfp", "itsuki.jpg")
         if os.path.exists(pfp_path):
             return FileResponse(pfp_path)
     raise HTTPException(status_code=404, detail="Image not found")
 
 
-@app.post("/api/chat")
-async def chat_endpoint(req: ChatRequest):
-    user_text = req.message.strip()
-    if not user_text:
-        raise HTTPException(status_code=400, detail="Empty message")
+@app.get("/miku.jpg")
+async def get_miku_pfp():
+    for base in [os.path.dirname(__file__)]:
+        pfp_path = os.path.join(base, "Pfp", "miku.jpg")
+        if os.path.exists(pfp_path):
+            return FileResponse(pfp_path)
+    raise HTTPException(status_code=404, detail="Image not found")
 
-    conversation_history.append({"role": "user", "content": user_text})
+
+def process_chat(history, user_text, voice_id):
+    history.append({"role": "user", "content": user_text})
 
     try:
         response = groq_client.chat.completions.create(
-            messages=conversation_history,
+            messages=history,
             model="openai/gpt-oss-120b",
             max_tokens=250,
         )
 
         teks_jawaban_raw = response.choices[0].message.content.strip()
-        conversation_history.append(
-            {"role": "assistant", "content": teks_jawaban_raw}
-        )
+        history.append({"role": "assistant", "content": teks_jawaban_raw})
 
-        # Parse Emotion Tag & Clean Text
         ekspresi = "idle"
         teks_bersih = teks_jawaban_raw
 
@@ -114,10 +141,8 @@ async def chat_endpoint(req: ChatRequest):
             ekspresi = teks_jawaban_raw[1:end_idx].lower()
             teks_bersih = teks_jawaban_raw[end_idx + 1 :].strip()
 
-        # Clean repetitive dots that trigger echo artifacts in TTS
         teks_bersih = teks_bersih.replace("...", ".").replace("..", ".")
 
-        # Request Voice from Fish Audio API
         audio_b64 = None
         try:
             url = "https://api.fish.audio/v1/tts"
@@ -128,7 +153,7 @@ async def chat_endpoint(req: ChatRequest):
             }
             payload = {
                 "text": teks_bersih,
-                "reference_id": "8c603f53ffd04b0c966e1561d252b75a",
+                "reference_id": voice_id,
                 "format": "mp3",
                 "temperature": 0.7,
                 "top_p": 0.7,
@@ -151,15 +176,38 @@ async def chat_endpoint(req: ChatRequest):
             "audio": audio_b64,
         }
     except Exception as e:
-        if conversation_history and conversation_history[-1]["role"] == "user":
-            conversation_history.pop()
+        if history and history[-1]["role"] == "user":
+            history.pop()
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/chat")
+async def chat_itsuki(req: ChatRequest):
+    user_text = req.message.strip()
+    if not user_text:
+        raise HTTPException(status_code=400, detail="Empty message")
+    return process_chat(conversation_history_itsuki, user_text, ITSUKI_VOICE_ID)
+
+
+@app.post("/api/chat/miku")
+async def chat_miku(req: ChatRequest):
+    user_text = req.message.strip()
+    if not user_text:
+        raise HTTPException(status_code=400, detail="Empty message")
+    return process_chat(conversation_history_miku, user_text, MIKU_VOICE_ID)
+
+
 @app.post("/api/reset")
-async def reset_endpoint():
-    global conversation_history
-    conversation_history = [SYSTEM_PROMPT]
+async def reset_itsuki():
+    global conversation_history_itsuki
+    conversation_history_itsuki = [SYSTEM_PROMPT_ITSUKI]
+    return {"status": "reset"}
+
+
+@app.post("/api/reset/miku")
+async def reset_miku():
+    global conversation_history_miku
+    conversation_history_miku = [SYSTEM_PROMPT_MIKU]
     return {"status": "reset"}
 
 
