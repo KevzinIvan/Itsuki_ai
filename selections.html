@@ -58,6 +58,32 @@
       opacity: 0.45;
     }
 
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(105vh) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.7;
+      }
+      85% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
     .container {
       position: relative;
       z-index: 1;
@@ -125,11 +151,12 @@
 
     .card {
       position: relative;
-      background: #FFFFFF;
-      border-radius: 16px;
+      background: transparent;
+      border: none;
+      border-top: 3.5px solid transparent;
+      border-radius: 0px;
       overflow: hidden;
-      border: 2px solid var(--border-light);
-      box-shadow: 0 8px 24px rgba(43, 38, 35, 0.04);
+      box-shadow: 0 4px 16px rgba(43, 38, 35, 0.04);
       cursor: pointer;
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
@@ -158,39 +185,35 @@
       transform: scale(1.05);
     }
 
-    /* Individual Sister Theme Borders & Hovers */
-    .card[data-sister="ichika"] { border-color: var(--ichika-color); }
+    /* Individual Sister Top Colored Accent Lines & Hovers */
+    .card[data-sister="ichika"] { border-top-color: var(--ichika-color); }
     .card[data-sister="ichika"]:hover {
-      box-shadow: 0 16px 36px rgba(234, 179, 8, 0.25);
-      transform: translateY(-10px);
+      box-shadow: 0 12px 28px rgba(234, 179, 8, 0.2);
+      transform: translateY(-8px);
     }
 
-    .card[data-sister="nino"] { border-color: var(--nino-color); }
+    .card[data-sister="nino"] { border-top-color: var(--nino-color); }
     .card[data-sister="nino"]:hover {
-      box-shadow: 0 16px 36px rgba(236, 72, 153, 0.25);
-      transform: translateY(-10px);
+      box-shadow: 0 12px 28px rgba(236, 72, 153, 0.2);
+      transform: translateY(-8px);
     }
 
-    .card[data-sister="miku"] { border-color: var(--miku-color); }
+    .card[data-sister="miku"] { border-top-color: var(--miku-color); }
     .card[data-sister="miku"]:hover {
-      box-shadow: 0 16px 36px rgba(59, 130, 246, 0.25);
-      transform: translateY(-10px);
+      box-shadow: 0 12px 28px rgba(59, 130, 246, 0.2);
+      transform: translateY(-8px);
     }
 
-    .card[data-sister="yotsuba"] { border-color: var(--yotsuba-color); }
+    .card[data-sister="yotsuba"] { border-top-color: var(--yotsuba-color); }
     .card[data-sister="yotsuba"]:hover {
-      box-shadow: 0 16px 36px rgba(16, 185, 129, 0.25);
-      transform: translateY(-10px);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.2);
+      transform: translateY(-8px);
     }
 
-    .card[data-sister="itsuki"] {
-      border-color: var(--itsuki-color);
-      border-width: 2.5px;
-    }
-
+    .card[data-sister="itsuki"] { border-top-color: var(--itsuki-color); }
     .card[data-sister="itsuki"]:hover {
-      box-shadow: 0 18px 40px rgba(239, 68, 68, 0.3);
-      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 14px 32px rgba(239, 68, 68, 0.25);
+      transform: translateY(-10px);
     }
 
     /* Status Badges */
@@ -409,6 +432,21 @@
       toastTimeout = setTimeout(() => {
         toast.classList.remove('show');
       }, 4000);
+    }
+
+    // Generate gentle floating Quintuplet color particles
+    const colors = ['#EAB308', '#EC4899', '#3B82F6', '#10B981', '#EF4444', '#F59E0B'];
+    for (let i = 0; i < 24; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 8 + 4;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (Math.random() * 8 + 7) + 's';
+      p.style.animationDelay = (Math.random() * 6) + 's';
+      document.body.appendChild(p);
     }
   </script>
 </body>
