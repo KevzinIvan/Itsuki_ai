@@ -45,21 +45,43 @@ class ChatRequest(BaseModel):
 
 
 @app.get("/", response_class=HTMLResponse)
-async def serve_index():
-    index_path = os.path.join(os.path.dirname(__file__), "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return HTMLResponse("<h1>index.html not found</h1>", status_code=404)
+@app.get("/selections.html", response_class=HTMLResponse)
+async def serve_selections():
+    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+        sel_path = os.path.join(base, "selections.html")
+        if os.path.exists(sel_path):
+            return FileResponse(sel_path)
+    return HTMLResponse("<h1>selections.html not found</h1>", status_code=404)
+
+
+@app.get("/itsuki.html", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+async def serve_itsuki():
+    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+        path = os.path.join(base, "itsuki.html")
+        if os.path.exists(path):
+            return FileResponse(path)
+        path_idx = os.path.join(base, "index.html")
+        if os.path.exists(path_idx):
+            return FileResponse(path_idx)
+    return HTMLResponse("<h1>itsuki.html not found</h1>", status_code=404)
+
+
+@app.get("/Selections/{filename}")
+async def serve_selections_file(filename: str):
+    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+        fpath = os.path.join(base, "Selections", filename)
+        if os.path.exists(fpath):
+            return FileResponse(fpath)
+    raise HTTPException(status_code=404, detail="File not found")
 
 
 @app.get("/itsuki.jpg")
 async def get_itsuki_pfp():
-    pfp_path = os.path.join(os.path.dirname(__file__), "Pfp", "itsuki.jpg")
-    if os.path.exists(pfp_path):
-        return FileResponse(pfp_path)
-    root_pfp = os.path.join(os.path.dirname(__file__), "itsuki.jpg")
-    if os.path.exists(root_pfp):
-        return FileResponse(root_pfp)
+    for base in [os.path.dirname(__file__), os.path.join(os.path.dirname(__file__), "Itsuki_ai")]:
+        pfp_path = os.path.join(base, "Pfp", "itsuki.jpg")
+        if os.path.exists(pfp_path):
+            return FileResponse(pfp_path)
     raise HTTPException(status_code=404, detail="Image not found")
 
 

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quintessential Tutors — Choose Your Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #F8F5EE;
+      --text-dark: #2B2623;
+      --text-muted: #8C827A;
+      --border-light: #E4DCD0;
+
+      --ichika-color: #EAB308;
+      --ichika-bg: #FEF9C3;
+      --nino-color: #EC4899;
+      --nino-bg: #FCE7F3;
+      --miku-color: #3B82F6;
+      --miku-bg: #E0E7FF;
+      --yotsuba-color: #10B981;
+      --yotsuba-bg: #D1FAE5;
+      --itsuki-color: #EF4444;
+      --itsuki-bg: #FEE2E2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background math grid curves aesthetics */
+    .bg-math-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Header & Logo */
+    .logo-wrapper {
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .logo-img {
+      max-width: 280px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.06));
+    }
+
+    .subtitle-group {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      letter-spacing: -0.01em;
+    }
+
+    .tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Cards Grid */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      width: 100%;
+      max-width: 1040px;
+    }
+
+    @media (max-width: 900px) {
+      .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .cards-container {
+        grid-template-columns: repeat(1, 1fr);
+        max-width: 320px;
+      }
+    }
+
+    .card {
+      position: relative;
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border-light);
+      box-shadow: 0 8px 24px rgba(43, 38, 35, 0.04);
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      height: 420px;
+      text-decoration: none;
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #F3EFE6;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.05);
+    }
+
+    /* Individual Sister Theme Borders & Hovers */
+    .card[data-sister="ichika"] { border-color: var(--ichika-color); }
+    .card[data-sister="ichika"]:hover {
+      box-shadow: 0 16px 36px rgba(234, 179, 8, 0.25);
+      transform: translateY(-10px);
+    }
+
+    .card[data-sister="nino"] { border-color: var(--nino-color); }
+    .card[data-sister="nino"]:hover {
+      box-shadow: 0 16px 36px rgba(236, 72, 153, 0.25);
+      transform: translateY(-10px);
+    }
+
+    .card[data-sister="miku"] { border-color: var(--miku-color); }
+    .card[data-sister="miku"]:hover {
+      box-shadow: 0 16px 36px rgba(59, 130, 246, 0.25);
+      transform: translateY(-10px);
+    }
+
+    .card[data-sister="yotsuba"] { border-color: var(--yotsuba-color); }
+    .card[data-sister="yotsuba"]:hover {
+      box-shadow: 0 16px 36px rgba(16, 185, 129, 0.25);
+      transform: translateY(-10px);
+    }
+
+    .card[data-sister="itsuki"] {
+      border-color: var(--itsuki-color);
+      border-width: 2.5px;
+    }
+
+    .card[data-sister="itsuki"]:hover {
+      box-shadow: 0 18px 40px rgba(239, 68, 68, 0.3);
+      transform: translateY(-12px) scale(1.02);
+    }
+
+    /* Status Badges */
+    .badge {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      z-index: 2;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .badge-ichika { background: var(--ichika-bg); color: #B45309; }
+    .badge-nino { background: var(--nino-bg); color: #BE185D; }
+    .badge-miku { background: var(--miku-bg); color: #1D4ED8; }
+    .badge-yotsuba { background: var(--yotsuba-bg); color: #047857; }
+    .badge-itsuki {
+      background: var(--itsuki-color);
+      color: #FFFFFF;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 4px rgba(239, 68, 68, 0.4); }
+      to { box-shadow: 0 0 14px rgba(239, 68, 68, 0.8); }
+    }
+
+    .card-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 12px 14px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%);
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sister-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sister-role {
+      font-size: 0.75rem;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px 22px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 100;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-text {
+      font-size: 0.88rem;
+      color: var(--text-dark);
+    }
+
+    .toast-btn {
+      background: var(--itsuki-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .toast-btn:hover {
+      background: #DC2626;
+    }
+
+    .credit-footer {
+      margin-top: 32px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Math Curves SVG Background -->
+  <svg class="bg-math-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-100,700 Q400,100 1540,650" stroke="#E2D7C7" stroke-width="2" fill="none" stroke-dasharray="6 6"/>
+    <path d="M100,850 Q720,-50 1340,850" stroke="#DBD0BF" stroke-width="1.5" fill="none"/>
+    <circle cx="720" cy="450" r="380" stroke="#E6DCCF" stroke-width="1" fill="none"/>
+    <line x1="100" y1="750" x2="1340" y2="750" stroke="#D3C7B5" stroke-width="1.5"/>
+    <line x1="150" y1="100" x2="150" y2="800" stroke="#D3C7B5" stroke-width="1.5"/>
+  </svg>
+
+  <div class="container">
+    <!-- Header Logo -->
+    <div class="logo-wrapper">
+      <img src="Selections/logo.png" alt="The Quintessential Tutors" class="logo-img">
+    </div>
+
+    <div class="subtitle-group">
+      <h1 class="title">Choose your guide</h1>
+      <p class="tagline">five tutors, five ways to understand</p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="cards-container">
+      <!-- 1. Ichika -->
+      <div class="card" data-sister="ichika" onclick="showComingSoon('Ichika')">
+        <div class="card-img-wrapper">
+          <img src="Selections/ichika.jpg" alt="Ichika Nakano" class="card-img">
+        </div>
+        <div class="card-footer">
+          <div class="sister-name">Ichika</div>
+          <div class="sister-role">Studying... (Coming Soon)</div>
+        </div>
+      </div>
+
+      <!-- 2. Nino -->
+      <div class="card" data-sister="nino" onclick="showComingSoon('Nino')">
+        <div class="card-img-wrapper">
+          <img src="Selections/nino.jpg" alt="Nino Nakano" class="card-img">
+        </div>
+        <div class="card-footer">
+          <div class="sister-name">Nino</div>
+          <div class="sister-role">Studying... (Coming Soon)</div>
+        </div>
+      </div>
+
+      <!-- 3. Miku -->
+      <div class="card" data-sister="miku" onclick="showComingSoon('Miku')">
+        <div class="card-img-wrapper">
+          <img src="Selections/miku.jpg" alt="Miku Nakano" class="card-img">
+        </div>
+        <div class="card-footer">
+          <div class="sister-name">Miku</div>
+          <div class="sister-role">Studying... (Coming Soon)</div>
+        </div>
+      </div>
+
+      <!-- 4. Yotsuba -->
+      <div class="card" data-sister="yotsuba" onclick="showComingSoon('Yotsuba')">
+        <div class="card-img-wrapper">
+          <img src="Selections/yotsuba.jpg" alt="Yotsuba Nakano" class="card-img">
+        </div>
+        <div class="card-footer">
+          <div class="sister-name">Yotsuba</div>
+          <div class="sister-role">Studying... (Coming Soon)</div>
+        </div>
+      </div>
+
+      <!-- 5. Itsuki (Active!) -->
+      <a href="itsuki.html" class="card" data-sister="itsuki">
+        <div class="card-img-wrapper">
+          <img src="Selections/itsuki.jpg" alt="Itsuki Nakano" class="card-img">
+        </div>
+        <div class="card-footer">
+          <div class="sister-name">Itsuki</div>
+          <div class="sister-role">Active AI Tutor</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="credit-footer">
+      Made by Kevin • The Quintessential Quintuplets AI
+    </div>
+  </div>
+
+  <!-- Toast for inactive sisters -->
+  <div class="toast" id="toast">
+    <div class="toast-text" id="toastText">Miku is currently studying hard!</div>
+    <a href="itsuki.html" class="toast-btn">Talk to Itsuki instead</a>
+  </div>
+
+  <script>
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    let toastTimeout = null;
+
+    function showComingSoon(name) {
+      toastText.textContent = `${name} is currently studying! Itsuki is ready to tutor you right now.`;
+      toast.classList.add('show');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
