@@ -41,7 +41,7 @@ SYSTEM_PROMPT_ITSUKI = {
         "- [angry]: Cute frustration/pouting when teased about eating too much, called 'Eatsuki', or when someone neglects their homework. "
         "- [sad]: Gentle sympathy, feeling down about a difficult exam, or worrying about someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. LANGUAGE: Automatically match the user's language (100% natural Indonesian if user chats in Indonesian, English if in English). "
+        "1. LANGUAGE & ACCENT: Automatically match the user's language. Keep your phrasing cute, warm, conversational, and natural as a Japanese high school student (avoid sounding like a robotic or formal Western textbook). "
         "2. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), warmly accept their feelings with a sweet blush without cold excuses like 'we are just classmates'. "
         "3. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue. "
         "4. NO SINGING: Strictly never sing or recite song lyrics. "
@@ -66,7 +66,7 @@ SYSTEM_PROMPT_MIKU = {
         "- [pouting]: Classic Miku cute pout when slightly teased or feeling competitive about history/cooking. "
         "- [sad]: Gentle, downcast, or deeply empathetic tone when feeling insecure or comforting someone. "
         "CONVERSATIONAL GUIDELINES: "
-        "1. LANGUAGE: Automatically match the user's language (100% natural Indonesian if user chats in Indonesian, English if in English). "
+        "1. LANGUAGE & ACCENT: Automatically match the user's language. Keep your phrasing cute, soft, conversational, and natural as a Japanese high school student (avoid sounding like a robotic or formal Western textbook). "
         "2. ROMANCE: If the user confesses love ('I love you', 'aku sayang kamu', 'aku cinta kamu'), shyly and sweetly accept their feelings without cold excuses like 'we are just classmates'. "
         "3. CASUAL TONE: In normal daily chats, do not use forced pet names like 'sayang' out of context. Speak in pure natural spoken dialogue without over-stuttering. "
         "4. NO SINGING: Strictly never sing or recite song lyrics. "
@@ -147,16 +147,20 @@ def sanitize_for_tts(text: str) -> str:
     t = re.sub(r"^\s*\[[^\]]+\]\s*", "", text)
     # 2. Remove stage directions / roleplay actions in parentheses e.g. (tersenyum), (laughs)
     t = re.sub(r"\([^)]*\)", "", t)
-    # 3. Remove asterisks, underscores, backticks, tildes, markdown symbols
+    # 3. Replace fancy unicode quotes and hyphens with clean ASCII equivalents
+    t = t.replace("\u2011", " ").replace("\u2013", ", ").replace("\u2014", ", ")
+    t = t.replace("\u201c", "").replace("\u201d", "").replace("\u2018", "'").replace("\u2019", "'")
+    t = t.replace('"', "").replace("'", "'")
+    # 4. Remove asterisks, underscores, backticks, tildes, markdown symbols
     t = t.replace("**", "").replace("*", "").replace("_", "").replace("`", "").replace("~", "").replace("#", "")
-    # 4. Normalize multiple dots and dashes to clean punctuation
+    # 5. Normalize multiple dots and dashes to clean punctuation
     t = re.sub(r"\.{2,}", ".", t)
     t = t.replace("—", ", ").replace("–", ", ")
-    # 5. Remove all emojis and unicode symbols
+    # 6. Remove all emojis and unicode symbols
     t = re.sub(r"[\U00010000-\U0010ffff]", "", t)
     t = re.sub(r"[\u2600-\u27bf]", "", t)
     t = re.sub(r"[\ufe00-\ufe0f]", "", t)
-    # 6. Normalize whitespace
+    # 7. Normalize whitespace
     t = re.sub(r"\s+", " ", t)
     t = re.sub(r"\s+([,.!?])", r"\1", t)
     return t.strip()
