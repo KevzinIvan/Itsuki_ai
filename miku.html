@@ -204,10 +204,16 @@
       border: 1px solid rgba(59, 130, 246, 0.2);
     }
 
-    .subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .back-nav-btn {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 10px;
+      line-height: 1;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .header-actions {
@@ -530,6 +536,9 @@
     <!-- Header -->
     <div class="header">
       <div class="character-info">
+        <a href="selections.html" class="icon-btn back-nav-btn" title="Back to Selection">
+          ←
+        </a>
         <div class="avatar-wrapper">
           <img src="/miku.jpg" alt="Miku Nakano" class="avatar-img">
           <span class="headphone-clip">🎧</span>
@@ -541,10 +550,6 @@
       </div>
 
       <div class="header-actions">
-        <a href="selections.html" class="icon-btn" title="Back to Selection">
-          ← Selection
-        </a>
-
         <div class="audio-visualizer" id="audioVisualizer" title="Speaking...">
           <div class="audio-bar"></div>
           <div class="audio-bar"></div>
