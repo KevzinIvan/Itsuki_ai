@@ -118,6 +118,26 @@ async def get_miku_pfp():
     raise HTTPException(status_code=404, detail="Image not found")
 
 
+def sanitize_for_tts(text: str) -> str:
+    # 1. Remove bracketed emotion tags at beginning e.g. [blushing]
+    t = re.sub(r"^\s*\[[^\]]+\]\s*", "", text)
+    # 2. Remove stage directions / roleplay actions in parentheses e.g. (tersenyum), (laughs)
+    t = re.sub(r"\([^)]*\)", "", t)
+    # 3. Remove asterisks, underscores, backticks, tildes, markdown symbols
+    t = t.replace("**", "").replace("*", "").replace("_", "").replace("`", "").replace("~", "").replace("#", "")
+    # 4. Normalize multiple dots and dashes to clean punctuation
+    t = re.sub(r"\.{2,}", ".", t)
+    t = t.replace("—", ", ").replace("–", ", ")
+    # 5. Remove all emojis and unicode symbols
+    t = re.sub(r"[\U00010000-\U0010ffff]", "", t)
+    t = re.sub(r"[\u2600-\u27bf]", "", t)
+    t = re.sub(r"[\ufe00-\ufe0f]", "", t)
+    # 6. Normalize whitespace
+    t = re.sub(r"\s+", " ", t)
+    t = re.sub(r"\s+([,.!?])", r"\1", t)
+    return t.strip()
+
+
 def process_chat(history, user_text, voice_id, is_miku=False):
     history.append({"role": "user", "content": user_text})
 
@@ -141,7 +161,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
             ekspresi = teks_jawaban_raw[1:end_idx].lower()
             teks_bersih = teks_jawaban_raw[end_idx + 1 :].strip()
 
-        # Clean text for display
+        # Clean text for UI display
         teks_bersih = (
             teks_bersih.replace("—", ", ")
             .replace("–", ", ")
@@ -153,18 +173,8 @@ def process_chat(history, user_text, voice_id, is_miku=False):
             .strip()
         )
 
-        # Clean text specifically for TTS (strip asterisks, markdown, emojis)
-        teks_audio = re.sub(r"\*+([^*]+)\*+", r"\1", teks_bersih)
-        teks_audio = (
-            teks_audio.replace("*", "")
-            .replace("`", "")
-            .replace("~", "")
-            .replace("#", "")
-            .replace("💖", "")
-            .replace("❤️", "")
-            .replace("💕", "")
-            .strip()
-        )
+        # Sanitize text specifically for TTS audio generation
+        teks_audio = sanitize_for_tts(teks_bersih)
 
         audio_b64 = None
         try:
@@ -179,7 +189,7 @@ def process_chat(history, user_text, voice_id, is_miku=False):
                 "text": teks_audio,
                 "reference_id": voice_id,
                 "format": "mp3",
-                "temperature": 0.3,
+                "temperature": 0.7,
                 "top_p": 0.7,
             }
 
