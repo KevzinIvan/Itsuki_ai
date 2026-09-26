@@ -66,6 +66,7 @@
       overflow: hidden;
     }
 
+    /* Mobile Configuration (HP) */
     @media (max-width: 640px) {
       body {
         padding: 0;
@@ -86,9 +87,7 @@
       }
       .character-info {
         gap: 6px;
-        flex: 1 1 auto;
-        min-width: 0;
-        overflow: hidden;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
       }
@@ -98,8 +97,8 @@
         flex-shrink: 0;
       }
       .avatar-wrapper {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         flex-shrink: 0;
         aspect-ratio: 1 / 1;
       }
@@ -111,16 +110,18 @@
         flex-shrink: 0;
       }
       .character-details {
-        min-width: 0;
-        overflow: hidden;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
       }
       .character-details h2 {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        overflow: visible;
+        text-overflow: clip;
         margin: 0;
-        line-height: 1.2;
+        line-height: 1.1;
+        flex-shrink: 0;
       }
       .creator-badge {
         display: none;
@@ -131,8 +132,9 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 100px;
         margin-top: 1px;
-        line-height: 1.2;
+        line-height: 1.1;
       }
       .header-actions {
         display: flex;
@@ -140,6 +142,7 @@
         align-items: center;
         gap: 4px;
         flex-shrink: 0;
+        margin-left: auto;
       }
       .icon-btn {
         padding: 4px 6px;
