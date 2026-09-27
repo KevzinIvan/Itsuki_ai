@@ -33,6 +33,8 @@
       --emotion-pouting-text: #3730A3;
       --emotion-sad-bg: #F1F5F9;
       --emotion-sad-text: #334155;
+      --emotion-thinking-bg: #F0FDF4;
+      --emotion-thinking-text: #166534;
     }
 
     * {
@@ -663,11 +665,12 @@
     let currentAudio = null;
 
     const emotionConfig = {
-      idle: { icon: '🎧', bg: 'var(--emotion-idle-bg)', text: 'var(--emotion-idle-text)' },
+      idle:     { icon: '🎧', bg: 'var(--emotion-idle-bg)',     text: 'var(--emotion-idle-text)'     },
       cheerful: { icon: '😊', bg: 'var(--emotion-cheerful-bg)', text: 'var(--emotion-cheerful-text)' },
       blushing: { icon: '😳', bg: 'var(--emotion-blushing-bg)', text: 'var(--emotion-blushing-text)' },
-      pouting: { icon: '🧋', bg: 'var(--emotion-pouting-bg)', text: 'var(--emotion-pouting-text)' },
-      sad: { icon: '🥺', bg: 'var(--emotion-sad-bg)', text: 'var(--emotion-sad-text)' }
+      pouting:  { icon: '🧋', bg: 'var(--emotion-pouting-bg)',  text: 'var(--emotion-pouting-text)'  },
+      sad:      { icon: '🥺', bg: 'var(--emotion-sad-bg)',      text: 'var(--emotion-sad-text)'      },
+      thinking: { icon: '🤔', bg: 'var(--emotion-thinking-bg)', text: 'var(--emotion-thinking-text)' },
     };
 
     function setEmotion(emotion) {

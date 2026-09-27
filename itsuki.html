@@ -33,6 +33,8 @@
       --emotion-angry-text: #991B1B;
       --emotion-sad-bg: #E0E7FF;
       --emotion-sad-text: #3730A3;
+      --emotion-thinking-bg: #F0FDF4;
+      --emotion-thinking-text: #166534;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -677,7 +679,8 @@
       cheerful: { icon: '😊', bg: 'var(--emotion-cheerful-bg)', text: 'var(--emotion-cheerful-text)', sprite: '/itsuki-sprites/cheerfull.png', label: '😊 Cheerful' },
       blushing: { icon: '😳', bg: 'var(--emotion-blushing-bg)', text: 'var(--emotion-blushing-text)', sprite: '/itsuki-sprites/blush.png',      label: '😳 Blushing' },
       angry:    { icon: '😤', bg: 'var(--emotion-angry-bg)',    text: 'var(--emotion-angry-text)',    sprite: '/itsuki-sprites/annoyed.png',   label: '😤 Annoyed'  },
-      sad:      { icon: '🥺', bg: 'var(--emotion-sad-bg)',      text: 'var(--emotion-sad-text)',      sprite: '/itsuki-sprites/thinking.png',  label: '🥺 Sad'      },
+      sad:      { icon: '🥺', bg: 'var(--emotion-sad-bg)',      text: 'var(--emotion-sad-text)',      sprite: '/itsuki-sprites/idle.png',      label: '🥺 Sad'      },
+      thinking: { icon: '🤔', bg: 'var(--emotion-thinking-bg)', text: 'var(--emotion-thinking-text)', sprite: '/itsuki-sprites/thinking.png',  label: '🤔 Thinking' },
     };
 
     // ─── Sprite switcher with crossfade ───
@@ -687,20 +690,25 @@
       spriteImg.classList.remove('fade-in');
       spriteImg.classList.add('fade-out');
 
+      spriteLabel.textContent = cfg.label;
+
       setTimeout(() => {
-        spriteImg.src = cfg.sprite;
+        // Set onload BEFORE src so cached images don't miss the event
         spriteImg.onload = () => {
           spriteImg.classList.remove('fade-out');
           spriteImg.classList.add('fade-in');
         };
-        // fallback if image already cached
+        spriteImg.onerror = () => {
+          spriteImg.classList.remove('fade-out');
+          spriteImg.classList.add('fade-in');
+        };
+        spriteImg.src = cfg.sprite;
+        // If image was already cached, complete is true immediately after src assignment
         if (spriteImg.complete) {
           spriteImg.classList.remove('fade-out');
           spriteImg.classList.add('fade-in');
         }
       }, 200);
-
-      spriteLabel.textContent = cfg.label;
     }
 
     // ─── Emotion badge ───
