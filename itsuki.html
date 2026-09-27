@@ -35,11 +35,7 @@
       --emotion-sad-text: #3730A3;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -55,21 +51,128 @@
       transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    body.page-loaded {
-      opacity: 1;
-      transform: scale(1);
-    }
+    body.page-loaded { opacity: 1; transform: scale(1); }
+    body.page-exiting { opacity: 0; transform: scale(0.98) translateY(8px); }
 
-    body.page-exiting {
-      opacity: 0;
-      transform: scale(0.98) translateY(8px);
-    }
-
-    .app-container {
+    /* ─── Outer wrapper: sprite panel + chat panel side by side ─── */
+    .page-wrapper {
+      display: flex;
+      gap: 16px;
       width: 100%;
-      max-width: 800px;
+      max-width: 1440px;
       height: 90vh;
       height: 90dvh;
+      align-items: stretch;
+    }
+
+    /* ─── LEFT: Sprite / Live Preview Panel ─── */
+    .sprite-panel {
+      width: 560px;
+      flex-shrink: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(44, 38, 35, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sprite-panel-header {
+      width: 100%;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid var(--border-color);
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .sprite-panel-header .sprite-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 0.01em;
+    }
+
+    /* keep keyframe but unused now */
+
+    .sprite-stage {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      /* Subtle gradient background */
+      background: linear-gradient(180deg, #fdf6f0 0%, #f7f1ea 60%, #efe8e0 100%);
+    }
+
+    /* Decorative circles in bg */
+    .sprite-stage::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(197,48,48,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .sprite-img {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 95%;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom center;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+    }
+
+    .sprite-img.fade-out {
+      opacity: 0;
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    .sprite-img.fade-in {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .sprite-emotion-label {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+
+    /* ─── RIGHT: App / Chat Panel ─── */
+    .app-container {
+      flex: 1;
+      min-width: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 20px;
@@ -79,115 +182,7 @@
       overflow: hidden;
     }
 
-    /* Mobile Configuration (HP) - Scaled to fit 100% full content */
-    @media (max-width: 640px) {
-      body {
-        padding: 0;
-      }
-      .app-container {
-        height: 100vh;
-        height: 100dvh;
-        border-radius: 0;
-        border: none;
-      }
-      .header {
-        padding: 6px 8px;
-        gap: 4px;
-        box-sizing: border-box;
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .character-info {
-        gap: 4px;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-      }
-      .back-nav-btn {
-        padding: 2px 5px;
-        font-size: 0.75rem;
-        flex-shrink: 0;
-      }
-      .avatar-wrapper {
-        width: 28px;
-        height: 28px;
-        flex-shrink: 0;
-        aspect-ratio: 1 / 1;
-      }
-      .avatar-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        aspect-ratio: 1 / 1;
-        flex-shrink: 0;
-      }
-      .character-details {
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column;
-      }
-      .character-details h2 {
-        font-size: clamp(0.7rem, 3.2vw, 0.8rem);
-        white-space: nowrap;
-        overflow: visible;
-        text-overflow: clip;
-        margin: 0;
-        line-height: 1.1;
-        flex-shrink: 0;
-      }
-      .creator-badge {
-        display: none;
-      }
-      .subtitle {
-        display: block;
-        font-size: clamp(0.5rem, 2.2vw, 0.58rem);
-        white-space: nowrap;
-        overflow: visible;
-        text-overflow: clip;
-        max-width: none;
-        margin-top: 1px;
-        line-height: 1.1;
-      }
-      .header-actions {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 3px;
-        flex-shrink: 0;
-        margin-left: auto;
-      }
-      .icon-btn {
-        padding: 2px 5px;
-        font-size: 0.62rem;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .emotion-badge {
-        padding: 2px 5px;
-        font-size: 0.62rem;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-      .emotion-badge #emotionText {
-        display: none;
-      }
-      .chat-messages {
-        padding: 12px 10px;
-      }
-      .message-row {
-        max-width: 90%;
-      }
-      .footer {
-        padding: 8px 10px;
-        padding-bottom: max(8px, env(safe-area-inset-bottom));
-      }
-    }
-
-    /* Header styling */
+    /* ─── Header ─── */
     .header {
       padding: 18px 24px;
       border-bottom: 1px solid var(--border-color);
@@ -195,6 +190,7 @@
       align-items: center;
       justify-content: space-between;
       background: #FFFFFF;
+      flex-shrink: 0;
     }
 
     .character-info {
@@ -208,7 +204,6 @@
       width: 48px;
       height: 48px;
       flex-shrink: 0;
-      aspect-ratio: 1 / 1;
       border-radius: 50%;
       background: linear-gradient(135deg, #C53030, #E53E3E);
       display: flex;
@@ -222,8 +217,6 @@
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
-      aspect-ratio: 1 / 1;
-      flex-shrink: 0;
       border: 2px solid #FFFFFF;
     }
 
@@ -253,7 +246,12 @@
       padding: 3px 8px;
       border-radius: 12px;
       border: 1px solid rgba(197, 48, 48, 0.2);
-      vertical-align: middle;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .back-nav-btn {
@@ -266,6 +264,16 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      text-decoration: none;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      background: none;
+      transition: all 0.2s ease;
+    }
+
+    .back-nav-btn:hover {
+      background: var(--bg-main);
+      color: var(--text-main);
     }
 
     .header-actions {
@@ -288,17 +296,13 @@
       text-transform: capitalize;
     }
 
-    /* Sound indicator waves */
     .audio-visualizer {
       display: none;
       align-items: center;
       gap: 3px;
       height: 16px;
     }
-
-    .audio-visualizer.active {
-      display: flex;
-    }
+    .audio-visualizer.active { display: flex; }
 
     .audio-bar {
       width: 3px;
@@ -307,7 +311,6 @@
       border-radius: 2px;
       animation: bounce 1s infinite ease-in-out alternate;
     }
-
     .audio-bar:nth-child(2) { animation-delay: 0.2s; }
     .audio-bar:nth-child(3) { animation-delay: 0.4s; }
 
@@ -330,14 +333,13 @@
       gap: 6px;
       transition: all 0.2s ease;
     }
-
     .icon-btn:hover {
       background: var(--bg-main);
       color: var(--text-main);
       border-color: #D3CBC0;
     }
 
-    /* Chat Messages Area */
+    /* ─── Chat Messages ─── */
     .chat-messages {
       flex: 1;
       padding: 24px;
@@ -389,14 +391,13 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-
     .chip:hover {
       background: var(--accent-red-light);
       border-color: var(--accent-red);
       color: var(--accent-red);
     }
 
-    /* Message Bubbles */
+    /* ─── Bubbles ─── */
     .message-row {
       display: flex;
       flex-direction: column;
@@ -409,15 +410,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .message-row.user {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-
-    .message-row.bot {
-      align-self: flex-start;
-      align-items: flex-start;
-    }
+    .message-row.user { align-self: flex-end; align-items: flex-end; }
+    .message-row.bot  { align-self: flex-start; align-items: flex-start; }
 
     .message-sender {
       font-size: 0.75rem;
@@ -434,7 +428,6 @@
       border-radius: 18px;
       font-size: 0.93rem;
       line-height: 1.5;
-      position: relative;
       word-wrap: break-word;
     }
 
@@ -467,12 +460,9 @@
       border-radius: 6px;
       transition: background 0.2s;
     }
+    .play-audio-btn:hover { background: var(--accent-red-light); }
 
-    .play-audio-btn:hover {
-      background: var(--accent-red-light);
-    }
-
-    /* Typing indicator */
+    /* ─── Typing indicator ─── */
     .typing-indicator {
       display: none;
       align-self: flex-start;
@@ -484,10 +474,7 @@
       gap: 5px;
       align-items: center;
     }
-
-    .typing-indicator.active {
-      display: flex;
-    }
+    .typing-indicator.active { display: flex; }
 
     .dot {
       width: 6px;
@@ -496,7 +483,6 @@
       border-radius: 50%;
       animation: pulse 1.4s infinite ease-in-out both;
     }
-
     .dot:nth-child(1) { animation-delay: -0.32s; }
     .dot:nth-child(2) { animation-delay: -0.16s; }
 
@@ -505,11 +491,12 @@
       40% { transform: scale(1); }
     }
 
-    /* Input Footer */
+    /* ─── Footer / Input ─── */
     .footer {
       padding: 16px 24px;
       border-top: 1px solid var(--border-color);
       background: #FFFFFF;
+      flex-shrink: 0;
     }
 
     .input-container {
@@ -522,7 +509,6 @@
       padding: 6px 6px 6px 16px;
       transition: border-color 0.2s ease;
     }
-
     .input-container:focus-within {
       border-color: var(--accent-red);
       background: #FFFFFF;
@@ -537,10 +523,7 @@
       font-size: 0.93rem;
       color: var(--text-main);
     }
-
-    input[type="text"]::placeholder {
-      color: var(--text-muted);
-    }
+    input[type="text"]::placeholder { color: var(--text-muted); }
 
     .send-btn {
       background: var(--accent-red);
@@ -556,19 +539,9 @@
       align-items: center;
       gap: 6px;
     }
-
-    .send-btn:hover {
-      background: var(--accent-red-hover);
-    }
-
-    .send-btn:active {
-      transform: scale(0.97);
-    }
-
-    .send-btn:disabled {
-      background: #D3CBC0;
-      cursor: not-allowed;
-    }
+    .send-btn:hover { background: var(--accent-red-hover); }
+    .send-btn:active { transform: scale(0.97); }
+    .send-btn:disabled { background: #D3CBC0; cursor: not-allowed; }
 
     .credit-tag {
       text-align: center;
@@ -576,110 +549,171 @@
       color: var(--text-muted);
       margin-top: 10px;
     }
+    .credit-tag span { font-weight: 600; color: var(--text-main); }
 
-    .credit-tag span {
-      font-weight: 600;
-      color: var(--text-main);
+    /* ─── Mobile: hide sprite panel, full-width chat ─── */
+    @media (max-width: 768px) {
+      .page-wrapper {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding: 0;
+        gap: 0;
+      }
+      .sprite-panel { display: none; }
+      body { padding: 0; }
+      .app-container {
+        border-radius: 0;
+        border: none;
+        height: 100vh;
+        height: 100dvh;
+      }
     }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Header -->
-    <div class="header">
-      <div class="character-info">
-        <a href="selections.html" class="icon-btn back-nav-btn" title="Back to Selection">
-          ←
-        </a>
-        <div class="avatar-wrapper">
-          <img src="/itsuki.jpg" alt="Itsuki Nakano" class="avatar-img">
-          <span class="star-clip">⭐</span>
-        </div>
-        <div class="character-details">
-          <h2>Itsuki Nakano <span class="creator-badge">Made by Kevin</span></h2>
-          <div class="subtitle">5th Sister • Diligent Food Lover</div>
-        </div>
+  <div class="page-wrapper">
+
+    <!-- ════ LEFT: Live Preview Sprite Panel ════ -->
+    <div class="sprite-panel">
+      <div class="sprite-panel-header">
+        <span class="sprite-title">Itsuki</span>
       </div>
-
-      <div class="header-actions">
-        <div class="audio-visualizer" id="audioVisualizer" title="Speaking...">
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
-          <div class="audio-bar"></div>
-        </div>
-
-        <div class="emotion-badge" id="emotionBadge">
-          <span id="emotionIcon">⭐</span>
-          <span id="emotionText">idle</span>
-        </div>
-
-        <button class="icon-btn" id="resetBtn" title="Reset Conversation">
-          ↻ Reset
-        </button>
+      <div class="sprite-stage">
+        <img
+          id="spriteImg"
+          class="sprite-img fade-in"
+          src="/itsuki-sprites/idle.png"
+          alt="Itsuki expression"
+        >
+        <div class="sprite-emotion-label" id="spriteEmotionLabel">✨ Idle</div>
       </div>
     </div>
 
-    <!-- Chat Messages -->
-    <div class="chat-messages" id="chatMessages">
-      <div class="welcome-card" id="welcomeCard">
-        <h3>Talk with Itsuki Nakano</h3>
-        <p>Ask her about her studies, favorite food, or daily high school life!</p>
-        <div class="suggestion-chips">
-          <button class="chip" onclick="sendPrompt('Hello Itsuki! How are you today?')">Hello Itsuki!</button>
-          <button class="chip" onclick="sendPrompt('What is your favorite food?')">Favorite food?</button>
-          <button class="chip" onclick="sendPrompt('Can we grab meat buns together?')">Meat buns?</button>
-          <button class="chip" onclick="sendPrompt('How are your exam studies going?')">Exam studies?</button>
+    <!-- ════ RIGHT: Chat Panel ════ -->
+    <div class="app-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="character-info">
+          <a href="selections.html" class="back-nav-btn icon-btn" title="Back to Selection">←</a>
+          <div class="avatar-wrapper">
+            <img src="/itsuki.jpg" alt="Itsuki Nakano" class="avatar-img">
+            <span class="star-clip">⭐</span>
+          </div>
+          <div class="character-details">
+            <h2>Itsuki Nakano <span class="creator-badge">Made by Kevin</span></h2>
+            <div class="subtitle">5th Sister • Diligent Food Lover</div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="audio-visualizer" id="audioVisualizer" title="Speaking...">
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+          </div>
+
+          <div class="emotion-badge" id="emotionBadge">
+            <span id="emotionIcon">⭐</span>
+            <span id="emotionText">idle</span>
+          </div>
+
+          <button class="icon-btn" id="resetBtn" title="Reset Conversation">↻ Reset</button>
         </div>
       </div>
 
-      <div class="typing-indicator" id="typingIndicator">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
+      <!-- Chat Messages -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="welcome-card" id="welcomeCard">
+          <h3>Talk with Itsuki Nakano</h3>
+          <p>Ask her about her studies, favorite food, or daily high school life!</p>
+          <div class="suggestion-chips">
+            <button class="chip" onclick="sendPrompt('Hello Itsuki! How are you today?')">Hello Itsuki!</button>
+            <button class="chip" onclick="sendPrompt('What is your favorite food?')">Favorite food?</button>
+            <button class="chip" onclick="sendPrompt('Can we grab meat buns together?')">Meat buns?</button>
+            <button class="chip" onclick="sendPrompt('How are your exam studies going?')">Exam studies?</button>
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+
+      <!-- Input Footer -->
+      <div class="footer">
+        <div class="input-container">
+          <input type="text" id="userInput" placeholder="Type a message to Itsuki..." autocomplete="off">
+          <button class="send-btn" id="sendBtn">Send</button>
+        </div>
+        <div class="credit-tag">Made by <span>Kevin</span></div>
       </div>
     </div>
 
-    <!-- Input Form -->
-    <div class="footer">
-      <div class="input-container">
-        <input type="text" id="userInput" placeholder="Type a message to Itsuki..." autocomplete="off">
-        <button class="send-btn" id="sendBtn">Send</button>
-      </div>
-      <div class="credit-tag">Made by <span>Kevin</span></div>
-    </div>
-  </div>
+  </div><!-- /.page-wrapper -->
 
   <script>
     const chatMessages = document.getElementById('chatMessages');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const typingIndicator = document.getElementById('typingIndicator');
-    const emotionBadge = document.getElementById('emotionBadge');
-    const emotionIcon = document.getElementById('emotionIcon');
-    const emotionText = document.getElementById('emotionText');
-    const resetBtn = document.getElementById('resetBtn');
-    const welcomeCard = document.getElementById('welcomeCard');
-    const audioVisualizer = document.getElementById('audioVisualizer');
+    const userInput    = document.getElementById('userInput');
+    const sendBtn      = document.getElementById('sendBtn');
+    const typingIndicator  = document.getElementById('typingIndicator');
+    const emotionBadge     = document.getElementById('emotionBadge');
+    const emotionIcon      = document.getElementById('emotionIcon');
+    const emotionText      = document.getElementById('emotionText');
+    const resetBtn         = document.getElementById('resetBtn');
+    const welcomeCard      = document.getElementById('welcomeCard');
+    const audioVisualizer  = document.getElementById('audioVisualizer');
+    const spriteImg        = document.getElementById('spriteImg');
+    const spriteLabel      = document.getElementById('spriteEmotionLabel');
 
     let currentAudio = null;
 
+    // ─── Emotion config ───
     const emotionConfig = {
-      idle: { icon: '⭐', bg: 'var(--emotion-idle-bg)', text: 'var(--emotion-idle-text)' },
-      cheerful: { icon: '😊', bg: 'var(--emotion-cheerful-bg)', text: 'var(--emotion-cheerful-text)' },
-      blushing: { icon: '😳', bg: 'var(--emotion-blushing-bg)', text: 'var(--emotion-blushing-text)' },
-      angry: { icon: '😤', bg: 'var(--emotion-angry-bg)', text: 'var(--emotion-angry-text)' },
-      sad: { icon: '🥺', bg: 'var(--emotion-sad-bg)', text: 'var(--emotion-sad-text)' }
+      idle:     { icon: '⭐', bg: 'var(--emotion-idle-bg)',     text: 'var(--emotion-idle-text)',     sprite: '/itsuki-sprites/idle.png',      label: '✨ Idle'     },
+      cheerful: { icon: '😊', bg: 'var(--emotion-cheerful-bg)', text: 'var(--emotion-cheerful-text)', sprite: '/itsuki-sprites/cheerfull.png', label: '😊 Cheerful' },
+      blushing: { icon: '😳', bg: 'var(--emotion-blushing-bg)', text: 'var(--emotion-blushing-text)', sprite: '/itsuki-sprites/blush.png',      label: '😳 Blushing' },
+      angry:    { icon: '😤', bg: 'var(--emotion-angry-bg)',    text: 'var(--emotion-angry-text)',    sprite: '/itsuki-sprites/annoyed.png',   label: '😤 Annoyed'  },
+      sad:      { icon: '🥺', bg: 'var(--emotion-sad-bg)',      text: 'var(--emotion-sad-text)',      sprite: '/itsuki-sprites/thinking.png',  label: '🥺 Sad'      },
     };
 
-    function setEmotion(emotion) {
-      const config = emotionConfig[emotion] || emotionConfig.idle;
-      emotionIcon.textContent = config.icon;
-      emotionText.textContent = emotion;
-      emotionBadge.style.backgroundColor = config.bg;
-      emotionBadge.style.color = config.text;
+    // ─── Sprite switcher with crossfade ───
+    function setSprite(emotion) {
+      const cfg = emotionConfig[emotion] || emotionConfig.idle;
+
+      spriteImg.classList.remove('fade-in');
+      spriteImg.classList.add('fade-out');
+
+      setTimeout(() => {
+        spriteImg.src = cfg.sprite;
+        spriteImg.onload = () => {
+          spriteImg.classList.remove('fade-out');
+          spriteImg.classList.add('fade-in');
+        };
+        // fallback if image already cached
+        if (spriteImg.complete) {
+          spriteImg.classList.remove('fade-out');
+          spriteImg.classList.add('fade-in');
+        }
+      }, 200);
+
+      spriteLabel.textContent = cfg.label;
     }
 
+    // ─── Emotion badge ───
+    function setEmotion(emotion) {
+      const cfg = emotionConfig[emotion] || emotionConfig.idle;
+      emotionIcon.textContent = cfg.icon;
+      emotionText.textContent = emotion;
+      emotionBadge.style.backgroundColor = cfg.bg;
+      emotionBadge.style.color = cfg.text;
+      setSprite(emotion);
+    }
+
+    // ─── Append message ───
     function appendMessage(sender, text, emotion = null, audioData = null) {
       if (welcomeCard) welcomeCard.style.display = 'none';
 
@@ -690,7 +724,7 @@
       senderLabel.className = 'message-sender';
 
       if (sender === 'bot') {
-        senderLabel.textContent = `Itsuki`;
+        senderLabel.textContent = 'Itsuki';
         if (emotion) {
           const emTag = document.createElement('span');
           emTag.style.opacity = '0.7';
@@ -720,61 +754,45 @@
       scrollToBottom();
     }
 
+    // ─── Audio ───
     function playAudio(audioBase64) {
       if (!audioBase64) return;
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-      }
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
       currentAudio = new Audio(audioBase64);
       audioVisualizer.classList.add('active');
-      
-      currentAudio.onended = () => {
-        audioVisualizer.classList.remove('active');
-      };
-      currentAudio.onerror = () => {
-        audioVisualizer.classList.remove('active');
-      };
-
-      currentAudio.play().catch(err => {
-        console.log("Audio autoplay prevented by browser:", err);
-        audioVisualizer.classList.remove('active');
-      });
+      currentAudio.onended = () => audioVisualizer.classList.remove('active');
+      currentAudio.onerror = () => audioVisualizer.classList.remove('active');
+      currentAudio.play().catch(() => audioVisualizer.classList.remove('active'));
     }
 
     function scrollToBottom() {
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // ─── Send ───
     async function handleSend() {
       const text = userInput.value.trim();
       if (!text) return;
 
       userInput.value = '';
       sendBtn.disabled = true;
-
       appendMessage('user', text);
-
-      // Show typing indicator
       typingIndicator.classList.add('active');
       scrollToBottom();
 
       try {
-        const res = await fetch('/api/chat', {
+        const res  = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text })
         });
-
         const data = await res.json();
         typingIndicator.classList.remove('active');
 
         if (res.ok) {
           setEmotion(data.expression);
           appendMessage('bot', data.text, data.expression, data.audio);
-          if (data.audio) {
-            playAudio(data.audio);
-          }
+          if (data.audio) playAudio(data.audio);
         } else {
           appendMessage('bot', `(Error: ${data.detail || 'Failed to respond'})`);
         }
@@ -792,38 +810,29 @@
       handleSend();
     }
 
+    // ─── Reset ───
     resetBtn.addEventListener('click', async () => {
       try {
         await fetch('/api/reset', { method: 'POST' });
         chatMessages.querySelectorAll('.message-row').forEach(el => el.remove());
         if (welcomeCard) welcomeCard.style.display = 'block';
         setEmotion('idle');
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio = null;
-        }
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
         audioVisualizer.classList.remove('active');
-      } catch (e) {
-        console.error("Failed to reset:", e);
-      }
+      } catch (e) { console.error('Failed to reset:', e); }
     });
 
     sendBtn.addEventListener('click', handleSend);
-    userInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleSend();
-    });
+    userInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleSend(); });
 
-    // Smooth Page Entrance and Back Navigation
-    window.addEventListener('DOMContentLoaded', () => {
-      document.body.classList.add('page-loaded');
-    });
-    // Fallback if already loaded
+    // ─── Page transitions ───
+    window.addEventListener('DOMContentLoaded', () => document.body.classList.add('page-loaded'));
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       document.body.classList.add('page-loaded');
     }
 
     document.querySelectorAll('.back-nav-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', e => {
         e.preventDefault();
         document.body.classList.remove('page-loaded');
         document.body.classList.add('page-exiting');

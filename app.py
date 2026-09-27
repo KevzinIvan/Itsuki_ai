@@ -138,6 +138,15 @@ async def serve_sfx(filename: str):
     raise HTTPException(status_code=404, detail="Audio file not found")
 
 
+@app.get("/itsuki-sprites/{filename:path}")
+async def serve_itsuki_sprites(filename: str):
+    for base in [os.path.dirname(__file__)]:
+        fpath = os.path.join(base, "itsuki sprites", filename)
+        if os.path.exists(fpath):
+            return FileResponse(fpath)
+    raise HTTPException(status_code=404, detail="Sprite not found")
+
+
 @app.get("/arigatomusic.jpg")
 @app.get("/Selections/arigatomusic.jpg")
 @app.get("/Selections/arogatomusic.jpg")
