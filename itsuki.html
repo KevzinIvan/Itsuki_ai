@@ -113,23 +113,10 @@
       padding: 0;
       position: relative;
       overflow: hidden;
-      /* Subtle gradient background */
-      background: linear-gradient(180deg, #fdf6f0 0%, #f7f1ea 60%, #efe8e0 100%);
+      background: url('/itsuki-sprites/apartment.png') center bottom / cover no-repeat;
     }
 
-    /* Decorative circles in bg */
-    .sprite-stage::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(197,48,48,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
+
 
     .sprite-img {
       position: absolute;
