@@ -597,6 +597,13 @@
         padding: 10px 14px;
         padding-bottom: max(10px, env(safe-area-inset-bottom));
       }
+
+      /* Hide "Made by Kevin" badge from header on mobile — too cramped */
+      .creator-badge { display: none; }
+
+      /* Lock page-level scroll — only the chat messages list scrolls */
+      html, body { overflow: hidden; height: 100%; }
+      .messages { overflow-y: auto; -webkit-overflow-scrolling: touch; }
     }
   </style>
 </head>
