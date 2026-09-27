@@ -603,11 +603,6 @@
             <div class="audio-bar"></div>
           </div>
 
-          <div class="emotion-badge" id="emotionBadge">
-            <span id="emotionIcon">⭐</span>
-            <span id="emotionText">idle</span>
-          </div>
-
           <button class="icon-btn" id="resetBtn" title="Reset Conversation">↻ Reset</button>
         </div>
       </div>
@@ -649,9 +644,6 @@
     const userInput    = document.getElementById('userInput');
     const sendBtn      = document.getElementById('sendBtn');
     const typingIndicator  = document.getElementById('typingIndicator');
-    const emotionBadge     = document.getElementById('emotionBadge');
-    const emotionIcon      = document.getElementById('emotionIcon');
-    const emotionText      = document.getElementById('emotionText');
     const resetBtn         = document.getElementById('resetBtn');
     const welcomeCard      = document.getElementById('welcomeCard');
     const audioVisualizer  = document.getElementById('audioVisualizer');
@@ -698,13 +690,8 @@
       }, 200);
     }
 
-    // ─── Emotion badge ───
+    // ─── Emotion ───
     function setEmotion(emotion) {
-      const cfg = emotionConfig[emotion] || emotionConfig.idle;
-      emotionIcon.textContent = cfg.icon;
-      emotionText.textContent = emotion;
-      emotionBadge.style.backgroundColor = cfg.bg;
-      emotionBadge.style.color = cfg.text;
       setSprite(emotion);
     }
 
