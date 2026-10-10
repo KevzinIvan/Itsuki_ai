@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quintessential Tutors — Student Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #F8F5EE;
+      --card-bg: #FFFFFF;
+      --text-dark: #2B2623;
+      --text-muted: #8C827A;
+      --border-light: #E4DCD0;
+      --border-focus: #EF4444;
+
+      --ichika-color: #EAB308;
+      --nino-color: #EC4899;
+      --miku-color: #3B82F6;
+      --yotsuba-color: #10B981;
+      --itsuki-color: #EF4444;
+      --itsuki-dark: #C53030;
+      --itsuki-light: #FFF5F5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+      opacity: 0;
+      transform: scale(0.985);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.page-loaded {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    body.page-exiting {
+      opacity: 0;
+      transform: scale(0.98) translateY(10px);
+    }
+
+    /* Math curves background */
+    .bg-math-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 50%;
+      animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(105vh) rotate(0deg);
+        opacity: 0;
+      }
+      15% { opacity: 0.7; }
+      85% { opacity: 0.7; }
+      100% {
+        transform: translateY(-10vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Page Transition Overlay */
+    .page-transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #F8F5EE;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+    }
+    .page-transition-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Main Container */
+    .login-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Logo area */
+    .logo-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .logo-img {
+      height: 68px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.06));
+      margin-bottom: 12px;
+      transition: transform 0.3s ease;
+    }
+    .logo-img:hover {
+      transform: scale(1.03);
+    }
+
+    .app-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-dark);
+      text-transform: uppercase;
+    }
+
+    .app-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Card Box */
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(43, 38, 35, 0.06);
+      width: 100%;
+      padding: 36px 32px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Color ribbon of the five sisters at the top of the card */
+    .card-ribbon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      display: flex;
+    }
+    .card-ribbon .bar {
+      flex: 1;
+      height: 100%;
+    }
+    .card-ribbon .bar:nth-child(1) { background: var(--ichika-color); }
+    .card-ribbon .bar:nth-child(2) { background: var(--nino-color); }
+    .card-ribbon .bar:nth-child(3) { background: var(--miku-color); }
+    .card-ribbon .bar:nth-child(4) { background: var(--yotsuba-color); }
+    .card-ribbon .bar:nth-child(5) { background: var(--itsuki-color); }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-input {
+      width: 100%;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      padding: 12px 14px 12px 42px;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      background: #FAFAF7;
+      color: var(--text-dark);
+      transition: all 0.25s ease;
+      outline: none;
+    }
+
+    .form-input:focus {
+      background: #FFFFFF;
+      border-color: var(--itsuki-color);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    .toggle-pwd-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+    .toggle-pwd-btn:hover {
+      color: var(--text-dark);
+    }
+
+    .form-hint {
+      font-size: 0.76rem;
+      color: #92400E;
+      background: #FEF3C7;
+      padding: 6px 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .login-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: -6px;
+      margin-bottom: 22px;
+      font-size: 0.8rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .remember-me input {
+      accent-color: var(--itsuki-color);
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      background: var(--itsuki-color);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.28);
+    }
+
+    .submit-btn:hover {
+      background: var(--itsuki-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.38);
+    }
+
+    .submit-btn:active {
+      transform: translateY(1px);
+    }
+
+    .submit-btn:disabled {
+      background: #D8D0C5;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Alert / Error Box */
+    .alert-box {
+      display: none;
+      font-size: 0.82rem;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .alert-box.error {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .alert-box.success {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Active User Quick Access (if user already logged in previously) */
+    .quick-continue-box {
+      display: none;
+      background: #F8F5EE;
+      border: 1px dashed var(--border-light);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .quick-continue-box.active {
+      display: flex;
+    }
+    .quick-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.83rem;
+      color: var(--text-dark);
+    }
+    .quick-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--itsuki-light);
+      color: var(--itsuki-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .quick-btn {
+      background: var(--text-dark);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .quick-btn:hover {
+      background: #4A423D;
+    }
+
+    /* Sisters Avatars Dock */
+    .sisters-dock {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .sisters-dock-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .sisters-list {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .sister-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+    .sister-avatar:hover {
+      transform: translateY(-3px) scale(1.1);
+    }
+    .sister-avatar[data-sister="ichika"]:hover { border-color: var(--ichika-color); box-shadow: 0 4px 10px rgba(234, 179, 8, 0.3); }
+    .sister-avatar[data-sister="nino"]:hover   { border-color: var(--nino-color);   box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3); }
+    .sister-avatar[data-sister="miku"]:hover   { border-color: var(--miku-color);   box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+    .sister-avatar[data-sister="yotsuba"]:hover{ border-color: var(--yotsuba-color);box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+    .sister-avatar[data-sister="itsuki"]:hover { border-color: var(--itsuki-color); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+
+    /* Footer info */
+    .login-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .login-footer span {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Transition overlay -->
+  <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
+
+  <!-- Background math svg -->
+  <svg class="bg-math-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-100,700 Q400,100 1540,650" stroke="#E2D7C7" stroke-width="2" fill="none" stroke-dasharray="6 6"/>
+    <path d="M100,850 Q720,-50 1340,850" stroke="#DBD0BF" stroke-width="1.5" fill="none"/>
+    <circle cx="720" cy="450" r="380" stroke="#E6DCCF" stroke-width="1" fill="none"/>
+    <line x1="100" y1="750" x2="1340" y2="750" stroke="#D3C7B5" stroke-width="1.5"/>
+  </svg>
+
+  <div class="login-container">
+    <!-- Header -->
+    <div class="logo-header">
+      <img src="Selections/logo.png" alt="The Quintessential Tutors" class="logo-img">
+      <h1 class="app-title">The Quintessential Tutors</h1>
+      <p class="app-subtitle">Study Companion & AI Guides</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+      <div class="card-ribbon">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+
+      <h2 class="card-title">Student Entrance</h2>
+      <p class="card-desc">Masukkan nama dan password untuk mulai belajar bersama Nakano bersaudara</p>
+
+      <!-- Alert Box -->
+      <div class="alert-box" id="alertBox"></div>
+
+      <!-- Quick Continue Box (if already logged in) -->
+      <div class="quick-continue-box" id="quickContinueBox">
+        <div class="quick-user-info">
+          <div class="quick-avatar" id="quickAvatarLetter">K</div>
+          <div>
+            <div style="font-weight: 600;" id="quickUsername">User</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">Sudah pernah masuk sebelumnya</div>
+          </div>
+        </div>
+        <button class="quick-btn" id="quickContinueBtn">Lanjut →</button>
+      </div>
+
+      <!-- Form -->
+      <form id="loginForm" autocomplete="on">
+        <!-- Username input -->
+        <div class="form-group">
+          <label class="form-label" for="username">
+            <span>Username / Nama Panggilan</span>
+            <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-muted);">Wajib diisi</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input 
+              type="text" 
+              id="username" 
+              name="username"
+              class="form-input" 
+              placeholder="Contoh: Fuutarou / Kevin" 
+              required
+              autofocus
+            >
+          </div>
+          <div class="form-hint">
+            <span>✨</span>
+            <span>Nama ini yang akan otomatis diingat & dipanggil oleh Itsuki & Miku!</span>
+          </div>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-group">
+          <label class="form-label" for="password">
+            <span>Password</span>
+            <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-muted);">Bebas / Kustom</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input 
+              type="password" 
+              id="password" 
+              name="password"
+              class="form-input" 
+              placeholder="••••••••" 
+              required
+            >
+            <button type="button" class="toggle-pwd-btn" id="togglePwdBtn" title="Lihat password">👁️</button>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="login-options">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>Ingat akun saya</span>
+          </label>
+          <span style="color: var(--text-muted); font-size: 0.75rem;">Siap belajar 📖</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span>Masuk & Temui Quintuplets</span>
+          <span>→</span>
+        </button>
+      </form>
+
+      <!-- Sisters Dock -->
+      <div class="sisters-dock">
+        <span class="sisters-dock-label">Your Quintuplet Tutors</span>
+        <div class="sisters-list">
+          <img src="Selections/ichika.jpg" alt="Ichika" class="sister-avatar" data-sister="ichika" title="Ichika Nakano">
+          <img src="Selections/nino.jpg" alt="Nino" class="sister-avatar" data-sister="nino" title="Nino Nakano">
+          <img src="Selections/miku.jpg" alt="Miku" class="sister-avatar" data-sister="miku" title="Miku Nakano (Active!)">
+          <img src="Selections/yotsuba.jpg" alt="Yotsuba" class="sister-avatar" data-sister="yotsuba" title="Yotsuba Nakano">
+          <img src="Selections/itsuki.jpg" alt="Itsuki" class="sister-avatar" data-sister="itsuki" title="Itsuki Nakano (Active!)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <div>The Quintessential Quintuplets AI Interactive Companion</div>
+      <div>Designed with warmth & dedication • <span>Gotoubun no Hanayome</span></div>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alertBox');
+    const togglePwdBtn = document.getElementById('togglePwdBtn');
+    const overlay = document.getElementById('pageTransitionOverlay');
+
+    const quickContinueBox = document.getElementById('quickContinueBox');
+    const quickUsername = document.getElementById('quickUsername');
+    const quickAvatarLetter = document.getElementById('quickAvatarLetter');
+    const quickContinueBtn = document.getElementById('quickContinueBtn');
+
+    // Page Load animation
+    window.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('page-loaded');
+
+      // Check existing session
+      const savedUser = localStorage.getItem('nakano_username') || localStorage.getItem('username');
+      if (savedUser && savedUser.trim()) {
+        usernameInput.value = savedUser.trim();
+        quickUsername.textContent = savedUser.trim();
+        quickAvatarLetter.textContent = savedUser.trim().charAt(0).toUpperCase();
+        quickContinueBox.classList.add('active');
+      }
+    });
+
+    // Toggle Password visibility
+    togglePwdBtn.addEventListener('click', () => {
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePwdBtn.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        togglePwdBtn.textContent = '👁️';
+      }
+    });
+
+    function showAlert(message, isError = true) {
+      alertBox.textContent = message;
+      alertBox.className = 'alert-box ' + (isError ? 'error' : 'success');
+      alertBox.style.display = 'flex';
+    }
+
+    function hideAlert() {
+      alertBox.style.display = 'none';
+    }
+
+    function proceedToSelections(username) {
+      // Store in localStorage & sessionStorage
+      localStorage.setItem('nakano_username', username);
+      localStorage.setItem('username', username);
+      sessionStorage.setItem('nakano_username', username);
+      sessionStorage.setItem('username', username);
+
+      // Transition smoothly
+      overlay.classList.add('active');
+      document.body.classList.add('page-exiting');
+
+      setTimeout(() => {
+        window.location.href = 'selections.html';
+      }, 400);
+    }
+
+    // Quick continue button
+    quickContinueBtn.addEventListener('click', () => {
+      const savedUser = localStorage.getItem('nakano_username') || localStorage.getItem('username');
+      if (savedUser) {
+        proceedToSelections(savedUser.trim());
+      }
+    });
+
+    // Form submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username) {
+        showAlert('Silakan masukkan username atau nama panggilan Anda.');
+        usernameInput.focus();
+        return;
+      }
+
+      if (!password) {
+        showAlert('Silakan masukkan password.');
+        passwordInput.focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Memverifikasi...</span>';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+          showAlert(`Selamat datang, ${username}! Membuka ruang belajar...`, false);
+          proceedToSelections(username);
+        } else {
+          // If server returned non-200, still fallback gracefully if needed
+          const data = await res.json().catch(() => ({}));
+          showAlert(data.detail || 'Login gagal, periksa input Anda.');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Masuk & Temui Quintuplets</span><span>→</span>';
+        }
+      } catch (err) {
+        // Fallback for offline/client mode: still proceed so user can chat even if api/login route hasn't refreshed
+        console.warn('API login check error, proceeding with local session:', err);
+        showAlert(`Selamat datang, ${username}! Membuka ruang belajar...`, false);
+        proceedToSelections(username);
+      }
+    });
+
+    // Floating particles generator
+    const colors = ['#EAB308', '#EC4899', '#3B82F6', '#10B981', '#EF4444'];
+    for (let i = 0; i < 24; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 8 + 4;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.left = Math.random() * 100 + 'vw';
+      const duration = Math.random() * 8 + 7;
+      p.style.animationDuration = duration + 's';
+      p.style.animationDelay = (-Math.random() * duration) + 's';
+      document.body.appendChild(p);
+    }
+  </script>
+</body>
+</html>
+
