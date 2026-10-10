@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Quintessential Tutors — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Playfair+Display:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F8F5EE;
+      --card: #FFFFFF;
+      --text: #2B2623;
+      --muted: #8C827A;
+      --border: #E4DCD0;
+      --accent: #EF4444;
+      --accent-dark: #C53030;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(234, 179, 8, .08), transparent 28%),
+        radial-gradient(circle at 85% 80%, rgba(59, 130, 246, .08), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .login-card {
+      width: min(100%, 440px);
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 18px 50px rgba(43, 38, 35, .09);
+    }
+
+    .ribbon {
+      height: 4px;
+      position: absolute;
+      inset: 0 0 auto;
+      display: flex;
+    }
+    .ribbon span { flex: 1; }
+    .ribbon span:nth-child(1) { background: #EAB308; }
+    .ribbon span:nth-child(2) { background: #EC4899; }
+    .ribbon span:nth-child(3) { background: #3B82F6; }
+    .ribbon span:nth-child(4) { background: #10B981; }
+    .ribbon span:nth-child(5) { background: var(--accent); }
+
+    .brand { text-align: center; margin-bottom: 30px; }
+    .brand img { width: auto; height: 62px; max-width: 100%; object-fit: contain; }
+    h1 {
+      margin: 16px 0 6px;
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      letter-spacing: .03em;
+    }
+    .brand p, .description { color: var(--muted); }
+    .brand p { margin: 0; font-family: 'Playfair Display', serif; font-style: italic; }
+    h2 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+    }
+    .description { margin: 0 0 24px; text-align: center; font-size: .88rem; line-height: 1.6; }
+
+    .field { margin-bottom: 18px; }
+    label { display: block; margin-bottom: 7px; font-size: .84rem; font-weight: 700; }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: #FAFAF7;
+      color: var(--text);
+      font: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239, 68, 68, .12); }
+    .hint { margin: 7px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+    .error { min-height: 20px; margin: -2px 0 12px; color: #B91C1C; font-size: .82rem; }
+    button {
+      width: 100%;
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      box-shadow: 0 5px 14px rgba(239, 68, 68, .24);
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    button:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .footer { margin-top: 22px; text-align: center; color: var(--muted); font-size: .74rem; }
+
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .login-card { padding: 32px 24px; }
+      h1 { font-size: 1.12rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <div class="ribbon" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <header class="brand">
+      <img src="Selections/logo.png" alt="The Quintessential Tutors">
+      <h1>The Quintessential Tutors</h1>
+      <p>Study companion &amp; AI guides</p>
+    </header>
+
+    <h2>Selamat datang!</h2>
+    <p class="description">Masuk dulu, lalu pilih tutor yang ingin menemanimu belajar.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="username">Username / nama panggilan</label>
+        <input id="username" name="username" type="text" maxlength="40" autocomplete="username" placeholder="Contoh: Kevin" required autofocus>
+        <p class="hint">Nama ini akan digunakan AI untuk menyapamu.</p>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+      </div>
+      <p class="error" id="loginError" role="alert" aria-live="polite"></p>
+      <button type="submit">Masuk &amp; pilih tutor <span aria-hidden="true">→</span></button>
+    </form>
+    <footer class="footer">Password hanya untuk melengkapi form dan tidak disimpan.</footer>
+  </main>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginError = document.getElementById('loginError');
+
+    loginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        loginError.textContent = 'Username dan password wajib diisi.';
+        return;
+      }
+
+      sessionStorage.setItem('nakano_username', username);
+      window.location.assign('selections.html');
+    });
+  </script>
+</body>
+</html>

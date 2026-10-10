@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Quintessential Tutors — Choose Your Guide</title>
+  <script>
+    if (!sessionStorage.getItem('nakano_username')) {
+      window.location.replace('login.html');
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -581,6 +586,7 @@
     <div class="subtitle-group">
       <h1 class="title">Choose your guide</h1>
       <p class="tagline">five tutors, five ways to understand</p>
+      <p class="tagline" id="userGreeting"></p>
     </div>
 
     <!-- Cards Grid -->
@@ -675,6 +681,11 @@
   </div>
 
   <script>
+    const username = sessionStorage.getItem('nakano_username');
+    if (username) {
+      document.getElementById('userGreeting').textContent = `Welcome, ${username}!`;
+    }
+
     const toast = document.getElementById('toast');
     const toastText = document.getElementById('toastText');
     let toastTimeout = null;

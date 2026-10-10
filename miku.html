@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Miku Nakano — AI Assistant</title>
+  <script>
+    if (!sessionStorage.getItem('nakano_username')) {
+      window.location.replace('login.html');
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -661,6 +666,7 @@
     const resetBtn = document.getElementById('resetBtn');
     const welcomeCard = document.getElementById('welcomeCard');
     const audioVisualizer = document.getElementById('audioVisualizer');
+    const username = sessionStorage.getItem('nakano_username') || '';
 
     let currentAudio = null;
 
@@ -699,7 +705,7 @@
           senderLabel.appendChild(emTag);
         }
       } else {
-        senderLabel.textContent = 'You';
+        senderLabel.textContent = username || 'You';
       }
 
       const bubble = document.createElement('div');
@@ -763,7 +769,7 @@
         const res = await fetch('/api/chat/miku', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ message: text, username })
         });
 
         const data = await res.json();
