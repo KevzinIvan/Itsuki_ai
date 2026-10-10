@@ -126,66 +126,6 @@
       z-index: 10;
     }
 
-    /* User Profile Bar */
-    .user-profile-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 1000px;
-      margin-bottom: 20px;
-      padding: 10px 18px;
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-light);
-      border-radius: 16px;
-      box-shadow: 0 4px 14px rgba(43, 38, 35, 0.03);
-    }
-
-    .user-greeting {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.88rem;
-      color: var(--text-dark);
-    }
-
-    .user-badge-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #FEE2E2;
-      color: #EF4444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 700;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    .logout-btn {
-      background: none;
-      border: 1px solid var(--border-light);
-      color: var(--text-muted);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .logout-btn:hover {
-      background: #FFFFFF;
-      color: #EF4444;
-      border-color: #EF4444;
-    }
-
     /* Header & Logo */
     .logo-wrapper {
       margin-bottom: 12px;
@@ -633,21 +573,6 @@
   </svg>
 
   <div class="container">
-    <!-- User Profile Bar -->
-    <div class="user-profile-bar" id="userProfileBar">
-      <div class="user-greeting">
-        <div class="user-badge-icon" id="userBadgeLetter">S</div>
-        <div>
-          <span>Selamat datang, <strong id="currentUsernameText" style="color: var(--text-dark);">Student</strong>! 👋</span>
-          <div style="font-size: 0.72rem; color: var(--text-muted);">Itsuki & Miku siap belajar bersamamu</div>
-        </div>
-      </div>
-      <button class="logout-btn" id="logoutBtn" title="Ganti Nama / Logout">
-        <span>Ganti Akun / Logout</span>
-        <span>🚪</span>
-      </button>
-    </div>
-
     <!-- Header Logo -->
     <div class="logo-wrapper">
       <img src="Selections/logo.png" alt="The Quintessential Tutors" class="logo-img">
@@ -917,30 +842,6 @@
         navigateWithTransition(targetUrl, link);
       });
     });
-
-    // ─── User Session Verification & Display ───
-    const savedUser = localStorage.getItem('nakano_username') || localStorage.getItem('username');
-    if (!savedUser || !savedUser.trim()) {
-      // If user hasn't logged in, redirect to login page
-      window.location.href = 'login.html';
-    } else {
-      const currentUname = savedUser.trim();
-      const userText = document.getElementById('currentUsernameText');
-      const badgeLetter = document.getElementById('userBadgeLetter');
-      if (userText) userText.textContent = currentUname;
-      if (badgeLetter) badgeLetter.textContent = currentUname.charAt(0).toUpperCase();
-    }
-
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('nakano_username');
-        localStorage.removeItem('username');
-        sessionStorage.removeItem('nakano_username');
-        sessionStorage.removeItem('username');
-        window.location.href = 'login.html';
-      });
-    }
 
     // Generate gentle floating Quintuplet color particles (Instant animation on load!)
     const colors = ['#EAB308', '#EC4899', '#3B82F6', '#10B981', '#EF4444', '#F59E0B'];

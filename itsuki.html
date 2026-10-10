@@ -657,13 +657,13 @@
       <!-- Chat Messages -->
       <div class="chat-messages" id="chatMessages">
         <div class="welcome-card" id="welcomeCard">
-          <h3 id="welcomeCardTitle">Talk with Itsuki Nakano</h3>
-          <p id="welcomeCardSubtitle">Itsuki is happy to study with you! Ask her about her studies, favorite food, or daily life!</p>
+          <h3>Talk with Itsuki Nakano</h3>
+          <p>Ask her about her studies, favorite food, or daily high school life!</p>
           <div class="suggestion-chips">
-            <button class="chip" onclick="sendPrompt('Hello Itsuki! Do you know my name?')">Do you know my name? 🌸</button>
             <button class="chip" onclick="sendPrompt('Hello Itsuki! How are you today?')">Hello Itsuki!</button>
             <button class="chip" onclick="sendPrompt('What is your favorite food?')">Favorite food?</button>
             <button class="chip" onclick="sendPrompt('Can we grab meat buns together?')">Meat buns?</button>
+            <button class="chip" onclick="sendPrompt('How are your exam studies going?')">Exam studies?</button>
           </div>
         </div>
 
@@ -742,17 +742,6 @@
       setSprite(emotion);
     }
 
-    // ─── User Session Initialization ───
-    const currentUsername = (localStorage.getItem('nakano_username') || localStorage.getItem('username') || '').trim();
-    if (!currentUsername) {
-      window.location.href = 'login.html';
-    } else {
-      const welcomeTitle = document.getElementById('welcomeCardTitle');
-      const welcomeSubtitle = document.getElementById('welcomeCardSubtitle');
-      if (welcomeTitle) welcomeTitle.textContent = `Welcome, ${currentUsername}! Meet Itsuki`;
-      if (welcomeSubtitle) welcomeSubtitle.textContent = `Itsuki knows you as ${currentUsername}. Ask her anything or talk about studies & food!`;
-    }
-
     // ─── Append message ───
     function appendMessage(sender, text, emotion = null, audioData = null) {
       if (welcomeCard) welcomeCard.style.display = 'none';
@@ -772,7 +761,7 @@
           senderLabel.appendChild(emTag);
         }
       } else {
-        senderLabel.textContent = currentUsername || 'You';
+        senderLabel.textContent = 'You';
       }
 
       const bubble = document.createElement('div');
@@ -824,7 +813,7 @@
         const res  = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, username: currentUsername })
+          body: JSON.stringify({ message: text })
         });
         const data = await res.json();
         typingIndicator.classList.remove('active');
@@ -853,11 +842,7 @@
     // ─── Reset ───
     resetBtn.addEventListener('click', async () => {
       try {
-        await fetch('/api/reset', { 
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: currentUsername })
-        });
+        await fetch('/api/reset', { method: 'POST' });
         chatMessages.querySelectorAll('.message-row').forEach(el => el.remove());
         if (welcomeCard) welcomeCard.style.display = 'block';
         setEmotion('idle');
