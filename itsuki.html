@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Itsuki Nakano — AI Assistant</title>
-  <script>
-    if (!sessionStorage.getItem('nakano_username')) {
-      window.location.replace('login.html');
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -701,7 +696,6 @@
     const audioVisualizer  = document.getElementById('audioVisualizer');
     const spriteImg        = document.getElementById('spriteImg');
     const spriteLabel      = document.getElementById('spriteEmotionLabel');
-    const username         = sessionStorage.getItem('nakano_username') || '';
 
     let currentAudio = null;
 
@@ -767,7 +761,7 @@
           senderLabel.appendChild(emTag);
         }
       } else {
-        senderLabel.textContent = username || 'You';
+        senderLabel.textContent = 'You';
       }
 
       const bubble = document.createElement('div');
@@ -819,7 +813,7 @@
         const res  = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, username })
+          body: JSON.stringify({ message: text })
         });
         const data = await res.json();
         typingIndicator.classList.remove('active');

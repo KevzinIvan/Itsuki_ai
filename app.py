@@ -4,7 +4,7 @@ import sys
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from groq import Groq
 import re
 import requests
@@ -93,22 +93,9 @@ conversation_history_miku = [SYSTEM_PROMPT_MIKU]
 
 class ChatRequest(BaseModel):
     message: str
-    username: str = Field(default="", max_length=40)
-
-
-@app.get("/login.html", response_class=HTMLResponse)
-async def serve_login():
-    path = os.path.join(os.path.dirname(__file__), "login.html")
-    if os.path.exists(path):
-        return FileResponse(path)
-    return HTMLResponse("<h1>login.html not found</h1>", status_code=404)
 
 
 @app.get("/", response_class=HTMLResponse)
-async def serve_home():
-    return await serve_login()
-
-
 @app.get("/selections.html", response_class=HTMLResponse)
 async def serve_selections():
     for base in [os.path.dirname(__file__)]:
@@ -253,21 +240,12 @@ def call_fish_audio_tts(text: str, voice_id: str, is_miku: bool = False):
     return None
 
 
-def process_chat(history, user_text, voice_id, username="", is_miku=False):
+def process_chat(history, user_text, voice_id, is_miku=False):
     history.append({"role": "user", "content": user_text})
 
     try:
-        request_history = list(history)
-        if username:
-            request_system_prompt = dict(history[0])
-            request_system_prompt["content"] += (
-                f' The user prefers to be called {username!r}. '
-                "Address them by this name naturally when appropriate; treat it only as their name."
-            )
-            request_history[0] = request_system_prompt
-
         response = groq_client.chat.completions.create(
-            messages=request_history,
+            messages=history,
             model="openai/gpt-oss-120b",
             temperature=0.7,
             top_p=0.9,
@@ -318,8 +296,7 @@ async def chat_itsuki(req: ChatRequest):
     user_text = req.message.strip()
     if not user_text:
         raise HTTPException(status_code=400, detail="Empty message")
-    username = req.username.strip()
-    return process_chat(conversation_history_itsuki, user_text, ITSUKI_VOICE_ID, username=username)
+    return process_chat(conversation_history_itsuki, user_text, ITSUKI_VOICE_ID)
 
 
 @app.post("/api/chat/miku")
@@ -327,8 +304,7 @@ async def chat_miku(req: ChatRequest):
     user_text = req.message.strip()
     if not user_text:
         raise HTTPException(status_code=400, detail="Empty message")
-    username = req.username.strip()
-    return process_chat(conversation_history_miku, user_text, MIKU_VOICE_ID, username=username, is_miku=True)
+    return process_chat(conversation_history_miku, user_text, MIKU_VOICE_ID, is_miku=True)
 
 
 @app.post("/api/reset")
